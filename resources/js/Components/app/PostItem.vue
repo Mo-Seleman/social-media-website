@@ -5,6 +5,11 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
         post: Object
     });
 
+    function isImage(attachment){
+        const mime = attachment.mime.split('/');
+        return mime[0].toLowerCase() === 'image';
+    }
+
 </script>
 
 <template>
@@ -32,10 +37,22 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
                 </DisclosurePanel>
                 <div class="flex justify-end">
                     <DisclosureButton class="pb-6">
-                        <span class="bg-[#016b83] hover:bg-[#018aa8] text-white font-bold p-2 rounded-md">{{ open ? 'Read Less' : 'Read More' }}</span>
+                        <span class="text-[#016b83] font-bold p-2 rounded-md hover:underline">{{ open ? 'Read Less' : 'Read More' }}</span>
                     </DisclosureButton>
                 </div>
             </Disclosure>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div v-for="attachment of post.attachments">
+                <img v-if="isImage(attachment)" :src="attachment.url">
+                <div v-else>
+                    {{ attachment.name }}
+                </div>
+            </div>
+        </div>
+        <div class="flex gap-3 py-4">
+            <button class="bg-[#016b83] min-w-[100px] hover:bg-[#018aa8] text-white font-bold p-2 rounded-md">Like</button>
+            <button class="bg-[#016b83] min-w-[100px] hover:bg-[#018aa8] text-white font-bold p-2 rounded-md">Comment</button>
         </div>
     </div>
 </template>

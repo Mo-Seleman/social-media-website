@@ -28,7 +28,7 @@ function handleImageError() {
         <div class="col-span-3">
             <GroupList />
         </div>
-        <div class="col-span-6">
+        <div class="col-span-6 h-lvh overflow-y-scroll">
             <CreatePost />
             <PostList />
         </div>
