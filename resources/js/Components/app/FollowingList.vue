@@ -9,7 +9,7 @@ const searchKeyword = ref('');
 </script>
 
 <template>
-     <div class="col-span-3 bg-[#112231] text-white py-6 px-4">
+     <div class="col-span-3 text-white py-6 px-4">
             <h2 class="text-2xl font-bold hover:text-[#ff4f40]">My Friends</h2>
             <TextInput :modal-value="searchKeyword" placeholder="Search For Friends" class="mt-2 w-full text-black"/>
             <div class="py-3">
