@@ -54,6 +54,14 @@ const post2 = {
 </script>
 
 <template>
-    <PostItem :post="post1" />
+    <PostItem :post="post1"/>
+    <PostItem :post="post2"/>
+    <PostItem :post="post2"/>
+    <PostItem :post="post2"/>
+    <PostItem :post="post2"/>
+    <PostItem :post="post1"/>
+    <PostItem :post="post2"/>
+    <PostItem :post="post2"/>
+    <PostItem :post="post2"/>
     <PostItem :post="post2"/>
 </template>
