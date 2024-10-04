@@ -15,7 +15,12 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
-        },
+        }, 
+        screens: {
+            'tablet': '768px',
+            'laptop': '1024px',
+            'desktop': '1280px',
+          },
     },
 
     plugins: [forms],
