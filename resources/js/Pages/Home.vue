@@ -4,7 +4,7 @@ import GroupList from '../Components/app/GroupList.vue';
 import FollowingList from '../Components/app/FollowingList.vue';
 import CreatePost from '../Components/app/CreatePost.vue';
 import PostList from '../Components/app/PostList.vue';
-import NavBar from '../Components/app/NavBar.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 defineProps({
 
@@ -20,8 +20,8 @@ function handleImageError() {
 
 <template>
     <Head title="Social Media Website" />
+       <AuthenticatedLayout>
         <main>
-            <NavBar />
             <div class="grid tablet:grid-cols-12 gap-3 mx-5">
                 <div class="hidden tablet:block col-span-3">
                     <GroupList />
@@ -35,4 +35,5 @@ function handleImageError() {
                 </div>
             </div>
         </main>
+       </AuthenticatedLayout>
 </template>
