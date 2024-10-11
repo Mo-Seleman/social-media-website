@@ -1,115 +1,87 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue';
 import { usePage } from "@inertiajs/vue3";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import TabItem from './Partials/TabItem.vue';
+import Edit from './Edit.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
-const user = usePage().props.auth.user;
+const authUser = usePage().props.auth.user; //Auth User Means Its There Account (So They Can Edit Nd What Not)
 
-const categories = ref({
-    Recent: [
-        {
-            id: 1,
-            title: 'Does drinking coffee make you smarter?',
-            date: '5h ago',
-            commentCount: 5,
-            shareCount: 2,
-        },
-        {
-            id: 2,
-            title: "So you've bought coffee... now what?",
-            date: '2h ago',
-            commentCount: 3,
-            shareCount: 2,
-        },
-    ],
-    Popular: [
-        {
-            id: 1,
-            title: 'Is tech making coffee better or worse?',
-            date: 'Jan 7',
-            commentCount: 29,
-            shareCount: 16,
-        },
-        {
-            id: 2,
-            title: 'The most innovative things happening in coffee',
-            date: 'Mar 19',
-            commentCount: 24,
-            shareCount: 12,
-        },
-    ],
-    Trending: [
-        {
-            id: 1,
-            title: 'Ask Me Anything: 10 answers to your questions about coffee',
-            date: '2d ago',
-            commentCount: 9,
-            shareCount: 5,
-        },
-        {
-            id: 2,
-            title: "The worst advice we've ever heard about coffee",
-            date: '4d ago',
-            commentCount: 1,
-            shareCount: 2,
-        },
-    ],
+const isMyProfile = computed(() => authUser && authUser.id === props.user.id)
+
+const props = defineProps({
+    mustVerifyEmail: {
+        type: Boolean,
+    },
+    status: {
+        type: String,
+    },
+    user: {
+        type: Object, //user Is The Person Thats Logged In But They Would Be Viewing Someone Elses Acc
+    },
 });
+
 </script>
 
 <template>
-    <div class="container mx-auto bg-gray-200">
-        <div class="relative">
+    <AuthenticatedLayout>
+        <div class="w-[768px] mx-auto bg-gray-200 h-[100vh] overflow-auto">
+        <div class="relative bg-white">
             <img src="https://marketplace.canva.com/EAEmGBdkt5A/3/0/1600w/canva-blue-pink-photo-summer-facebook-cover-gy8LiIJTTGw.jpg" class="w-full h-[300px] object-co" alt="Profile Cover Photo">
-            <img src="https://cdn-icons-png.flaticon.com/512/6858/6858504.png" class="absolute left-[100px] w-[150px] h-[150px] -bottom-[75px]" alt="User Profile Picture">
+            <div class="flex">
+                <img src="https://cdn-icons-png.flaticon.com/512/6858/6858504.png" class="ml-[48px] w-[150px] h-[150px] mt-[-75px]" alt="User Profile Picture">
+                <div class="flex justify-between items-center flex-1 p-3">
+                    <h2 class="font-bold text-lg">{{ user.name }}</h2>
+                    <PrimaryButton v-if="isMyProfile">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 mr-2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                            </svg>
+                                Edit Profile
+                    </PrimaryButton>
+                </div>
+            </div>
         </div>
         <div class="w-full sm:px-0">
             <TabGroup>
-                <TabList class="pl-[250px] flex space-x-1 rounded-xl text-blue-500 p-1">
-                    <Tab v-for="category in Object.keys(categories)" as="template" :key="category"
-                        v-slot="{ selected }">
-                        <button :class="[
-                            'rounded-lg px-3 py-2.5 text-sm font-medium leading-5',
-                            'ring-white/60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
-                            selected
-                                ? 'bg-white text-blue-700 shadow'
-                                : 'text-gray-700',
-                        ]">
-                            {{ category }}
-                        </button>
+                <TabList class="flex bg-white border-t-gray-200 border-2">
+                    <Tab v-if="isMyProfile" v-slot="{ selected }" as="tamplate">
+                       <TabItem text="About" :selected="selected" />
+                    </Tab>
+                    <Tab v-slot="{ selected }" as="tamplate">
+                       <TabItem text="Posts" :selected="selected" />
+                    </Tab>
+                    <Tab v-slot="{ selected }" as="tamplate">
+                        <TabItem text="Followers" :selected="selected" />
+                    </Tab>
+                    <Tab v-slot="{ selected }" as="tamplate">
+                        <TabItem text="Following" :selected="selected" />
+                    </Tab>
+                    <Tab v-slot="{ selected }" as="tamplate">
+                        <TabItem text="Photos" :selected="selected" />
                     </Tab>
                 </TabList>
 
                 <TabPanels class="mt-2">
-                    <TabPanel v-for="(posts, idx) in Object.values(categories)" :key="idx" :class="[
-                        'rounded-xl bg-white p-3',
-                        'ring-white/60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
-                    ]">
-                        <ul>
-                            <li v-for="post in posts" :key="post.id" class="relative rounded-md p-3 hover:bg-gray-100">
-                                <h3 class="text-sm font-medium leading-5">
-                                    {{ post.title }}
-                                </h3>
-
-                                <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
-                                    <li>{{ post.date }}</li>
-                                    <li>&middot;</li>
-                                    <li>{{ post.commentCount }} comments</li>
-                                    <li>&middot;</li>
-                                    <li>{{ post.shareCount }} shares</li>
-                                </ul>
-
-                                <a href="#" :class="[
-                                    'absolute inset-0 rounded-md',
-                                    'ring-blue-400 focus:z-10 focus:outline-none focus:ring-2',
-                                ]" />
-                            </li>
-                        </ul>
+                    <TabPanel v-if="isMyProfile" key="posts">
+                        <Edit :must-verify-email="mustVerifyEmail" :status="status"/>
+                    </TabPanel>
+                    <TabPanel class="bg-white p-3 shadow">
+                        Posts Content
+                    </TabPanel>
+                    <TabPanel class="bg-white p-3 shadow">
+                        Followers Content
+                    </TabPanel>
+                    <TabPanel class="bg-white p-3 shadow">
+                        Following Content
+                    </TabPanel>
+                    <TabPanel class="bg-white p-3 shadow">
+                        Photos Content
                     </TabPanel>
                 </TabPanels>
             </TabGroup>
         </div>
     </div>
-
-
+    </AuthenticatedLayout>
 </template>
