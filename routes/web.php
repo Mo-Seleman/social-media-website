@@ -4,6 +4,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PostController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -19,6 +20,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/my-groups', [GroupController::class, 'index'])->name('my-groups');
     Route::get('/my-friends', [FriendController::class, 'index'])->name('my-friends');
+
+    Route::post('/post', [PostController::class, 'store'])->name('post.store');
 });
 
 require __DIR__.'/auth.php';

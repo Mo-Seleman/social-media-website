@@ -32,7 +32,7 @@
     <div class="px-6 pt-6 mb-4 bg-[#f2f8f3] rounded-md shadow">
         <div>
             <a href="javascript:void(0)" class="flex items-center gap-2">
-                <img :src="post.user.avatar" class="w-[52px] rounded-full transition-all hover:animate-pulse hover:scale-105">
+                <img :src="post.user.avatar_url" class="w-[52px] rounded-full transition-all hover:animate-pulse hover:scale-105">
                 <div>
                     <div class="flex flex-row gap-2 font-bold text-lg">
                         <h4 class="hover:underline">{{ post.user.name }}</h4>
@@ -47,15 +47,17 @@
         </div>
         <div>
             <Disclosure v-slot="{ open }">
-                <div v-if="!open" v-html="post.body.substring(0, 150)" class="py-3"/>
-                <DisclosurePanel>
-                    <div v-html="post.body" class="py-3"/>
-                </DisclosurePanel>
-                <div class="flex justify-end">
-                    <DisclosureButton class="pb-6">
-                        <span class="text-[#016b83] font-bold p-2 rounded-md hover:underline">{{ open ? 'Read Less' : 'Read More' }}</span>
-                    </DisclosureButton>
-                </div>
+                <div v-if="!open || post.body.length <= 200" v-html="post.body.substring(0, 150)" class="py-3"/>
+                <template v-if="post.body.length > 200">
+                    <DisclosurePanel>
+                        <div v-html="post.body" class="py-3"/>
+                    </DisclosurePanel>
+                    <div class="flex justify-end">
+                        <DisclosureButton class="pb-6">
+                            <span class="text-[#016b83] font-bold p-2 rounded-md hover:underline">{{ open ? 'Read Less' : 'Read More' }}</span>
+                        </DisclosureButton>
+                    </div>
+                </template>
             </Disclosure>
         </div>
         <div class="grid grid-cols-2 desktop:grid-cols-3 gap-3">

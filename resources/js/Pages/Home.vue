@@ -7,7 +7,7 @@ import PostList from '../Components/app/PostList.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 defineProps({
-
+    posts: Object,
 });
 
 function handleImageError() {
@@ -28,7 +28,7 @@ function handleImageError() {
                 </div>
                 <div class="col-span-6 h-lvh overflow-y-scroll">
                     <CreatePost />
-                    <PostList />
+                    <PostList :posts="posts.data"/>
                 </div>
                 <div class="hidden tablet:block col-span-3">
                     <FollowingList />
