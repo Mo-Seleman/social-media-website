@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-friends', [FriendController::class, 'index'])->name('my-friends');
 
     Route::post('/post', [PostController::class, 'store'])->name('post.store');
+    Route::put('/post/{post}', [PostController::class, 'update'])->name('post.update');
 });
 
 require __DIR__.'/auth.php';
