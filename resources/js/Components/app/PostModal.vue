@@ -5,6 +5,7 @@ import { XMarkIcon } from '@heroicons/vue/24/solid'
 import TextareaInput from '../TextareaInput.vue';
 import PostUserHeader from './PostUserHeader.vue';
 import { useForm } from '@inertiajs/vue3';
+import Editor from './Editor.vue';
 
 const props = defineProps({
     post: {
@@ -66,7 +67,7 @@ watch(() => props.post, () => {
                                 </DialogTitle>
                                 <div class="p-4">
                                     <PostUserHeader :post="post" :showTime="false" class="mb-4"/>
-                                    <TextareaInput v-model="form.body" class="mb-3 w-full" />                        
+                                    <Editor v-model="form.body"/>
                                 </div>
                                 <div class="py-3 px-4">
                                     <button @click="submit" type="button" class="bg-[#016b83] p-2 text-white font-bold rounded-md hover:bg-[#018aa8] w-full">
