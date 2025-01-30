@@ -33,12 +33,23 @@ function closeModal() {
 }
 
 function submit() {
-    form.put(route('post.update', props.post.id), {
-        preserveScroll: true,
-        onSuccess: () => {
-            show.value = false;
-        }
-    })
+    if(form.id){
+            form.put(route('post.update', props.post.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                show.value = false;
+                form.reset()
+            }
+        })
+    } else {
+        form.post(route('post.store'), {
+            preserveScroll: true,
+            onSuccess: () => {
+                show.value = false 
+                form.reset()           
+            }
+        })
+    }
 }
 
 watch(() => props.post, () => {
@@ -60,7 +71,7 @@ watch(() => props.post, () => {
                         <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95" enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
                             <DialogPanel class="w-full max-w-md transform overflow-hidden rounded bg-white text-left align-middle shadow-xl transition-all" >
                                 <DialogTitle as="h3" class="flex items-center justify-between py-3 px-4 font-medium bg-gray-100 text-gray-900">
-                                    <h4>Update Post</h4>
+                                    <h4>{{ form.id ? 'Update Post' : 'Create Post' }}</h4>
                                     <button @click="show = false" class="w-8 h-8 rounded-full hover:bg-black/5 transition flex items-center justify-center">
                                         <XMarkIcon class="w-4 h-4" />
                                     </button>
