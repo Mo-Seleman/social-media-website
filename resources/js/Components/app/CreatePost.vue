@@ -1,36 +1,28 @@
 <script setup>
 
 import { ref } from "vue";
-import TextareaInput from "../TextareaInput.vue";
-import { useForm } from "@inertiajs/vue3";
+import { usePage } from "@inertiajs/vue3";
+import PostModal from "./PostModal.vue";
+import { PencilSquareIcon } from "@heroicons/vue/24/solid";
 
-const postCreating = ref(false);
+const authUser = usePage().props.auth.user;
 
-const newPostForm = useForm({
-    body: ''
-});
+const showModal = ref(false);
+const newPost = ref({
+    id: null,
+    body: '',
+    user: authUser
+})
 
-function submit(){
-    newPostForm.post(route('post.store'), {
-        onSuccess: () => {
-            newPostForm.reset()
-        }
-    })
+function showCreatePostModal(){
+    showModal.value = true;
 }
 
 </script>
 
 <template>
     <div class="py-4">
-        <div @click="postCreating = true">
-            <TextareaInput class="mb-3 w-full" placeholder="Click Here To Create New Post" v-model="newPostForm.body" />
-        </div>
-        <!-- <pre class="text-white text-xl">
-            {{ newPostForm.body }}
-        </pre> -->
-        <div v-if="postCreating" class="flex flex-row justify-between gap-2">
-            <button type="button" class="bg-[#016b83] p-2 text-white font-bold rounded-md relative cursor-pointer hover:bg-[#018aa8]">Attach Files <input type="file" class="absolute left-0 top-0 right-0 bottom-0 opacity-0 cursor-pointer"></button>
-            <button @click="submit" type="submit" class="bg-[#016b83] p-2 text-white font-bold rounded-md hover:bg-[#018aa8]">Submit</button>
-        </div>
+        <button @click="showCreatePostModal" class="flex items-center justify-center mb-1 py-4 w-full border-1 border-gray-300 text-white text-lg rounded-md shadow-sm bg-[#016b83] hover:bg-[#018aa8] font-bold">Click here to create a new post <PencilSquareIcon class="w-5 h-5 mx-2"/> </button>
+        <PostModal :post="newPost" v-model="showModal"></PostModal>
     </div>
 </template>
