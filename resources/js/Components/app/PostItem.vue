@@ -93,10 +93,10 @@
         </div>
         <div>
             <Disclosure v-slot="{ open }">
-                <div v-if="!open || post.body.length <= 200" v-html="post.body.substring(0, 150)" class="py-3"/>
+                <div v-if="!open || post.body.length <= 200" v-html="post.body.substring(0, 150)" class="ck-content-output py-3"/>
                 <template v-if="post.body.length > 200">
                     <DisclosurePanel>
-                        <div v-html="post.body" class="py-3"/>
+                        <div v-html="post.body" class="ck-content-output py-3"/>
                     </DisclosurePanel>
                     <div class="flex justify-end">
                         <DisclosureButton class="pb-6">
