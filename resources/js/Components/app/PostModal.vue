@@ -22,6 +22,7 @@ const attachmentFiles = ref([])
 const form = useForm({
     id: null,
     body: '',
+    attachments: []
 })
 
 const show = computed({
@@ -32,25 +33,30 @@ const show = computed({
 function closeModal() {
   show.value = false
   emit('update:modelValue', false)
-  form.reset()
-  attachmentFiles.value = []
+  resetModal()
 }
 
-function submit() {
+function resetModal() {
+    form.reset()
+    attachmentFiles.value = []
+}
+
+function submit() { 
+    form.attachments = attachmentFiles.value.map(myFile => myFile.file)
     if(form.id){
             form.put(route('post.update', props.post.id), {
             preserveScroll: true,
             onSuccess: () => {
                 show.value = false;
-                form.reset()
+                closeModal()
             }
         })
     } else {
         form.post(route('post.store'), {
             preserveScroll: true,
             onSuccess: () => {
-                show.value = false 
-                form.reset()           
+                show.value = false; 
+                closeModal()           
             }
         })
     }
@@ -98,7 +104,7 @@ function removeFile(myFile){
 <template>
     <Teleport to="body">
         <TransitionRoot appear :show="show" as="template">
-            <Dialog as="div" @close="closeModal" class="relative z-10">
+            <Dialog as="div" @close="closeModal" class="relative z-50">
                 <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100" leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
                     <div class="fixed inset-0 bg-black/25" />
                 </TransitionChild>
@@ -115,7 +121,7 @@ function removeFile(myFile){
                                 <div class="p-4">
                                     <PostUserHeader :post="post" :showTime="false" class="mb-4"/>
                                     <Editor v-model="form.body"/>
-                                    <div class="grid grid-cols-2 desktop:grid-cols-3 gap-3 my-3">
+                                    <div class="grid gap-3 my-3" :class="[ attachmentFiles.length === 1 ? 'grid-cols-1' : 'grid-cols-2' ]">
                                         <div v-for="(myFile, index) of attachmentFiles" :key="index" class="relative">
                                             <!-- <button :class="['w-6 h-6 absolute right-3 top-3 cursor-pointer rounded-sm', { 'text-white bg-black': showPostMenu, 'text-black bg-white': !showPostMenu }]">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -136,7 +142,7 @@ function removeFile(myFile){
                                                 <XMarkIcon class="size-4" />
                                             </button>
 
-                                            <img v-if="isImage(myFile.file)" :src="myFile.url" class="bg-cover bg-no-repeat object-cover aspect-square rounded-lg">
+                                            <img v-if="isImage(myFile.file)" :src="myFile.url" class="bg-cover bg-no-repeat object-contain aspect-square rounded-lg">
                                             <div v-else class="aspect-square bg-blue-100 flex flex-col items-center justify-center text-gray-500 hover:text-black active:text-black cursor-pointer rounded-lg">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
