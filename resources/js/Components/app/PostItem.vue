@@ -7,7 +7,7 @@
     import PostUserHeader from './PostUserHeader.vue';
     import { router } from '@inertiajs/vue3';
     import { isImage } from '@/helpers';
-import { ChatBubbleLeftRightIcon, HandThumbUpIcon } from '@heroicons/vue/24/solid';
+import { ArrowDownTrayIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon } from '@heroicons/vue/24/solid';
  
     const props = defineProps({
         post: Object
@@ -69,17 +69,8 @@ import { ChatBubbleLeftRightIcon, HandThumbUpIcon } from '@heroicons/vue/24/soli
                         </button>
                         </MenuItem>
                         <MenuItem v-slot="{ active }">
-                        <button
-                            @click="deletePost"
-                            :class="[
-                            active ? 'bg-[#016b83] text-white' : 'text-gray-900',
-                            'group flex w-full items-center rounded-md px-2 py-2 text-sm',
-                            ]"
-                        >
-                            <TrashIcon
-                            class="mr-2 h-4 w-4"
-                            aria-hidden="true"
-                            />
+                        <button @click="deletePost" :class="[ active ? 'bg-[#016b83] text-white' : 'text-gray-900', 'group flex w-full items-center rounded-md px-2 py-2 text-sm', ]">
+                            <TrashIcon class="mr-2 h-4 w-4" aria-hidden="true" />
                             Delete
                         </button>
                         </MenuItem>
@@ -103,26 +94,14 @@ import { ChatBubbleLeftRightIcon, HandThumbUpIcon } from '@heroicons/vue/24/soli
                 </template>
             </Disclosure>
         </div>
-        <div class="grid gap-3" :class="[
-            post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
-        ]">
+        <div class="grid gap-3" :class="[ post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2' ]">
             <div v-for="(attachment, index) of post.attachments.slice(0, 4)" :key="index" class="relative">
                 <div v-if="index === 3 && post.attachments.length > 4" class="absolute left-0 top-0 right-0 bottom-0 z-10 bg-black/60 text-white flex items-center justify-center text-2xl">
                     <p>+{{ post.attachments.length - 4}}</p>
                 </div>
-                <button :class="['w-6 h-6 absolute right-3 top-3 cursor-pointer rounded-sm z-20', { 'text-white bg-black': showPostMenu, 'text-black bg-white': !showPostMenu }]">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
-                    </svg>
-                </button>
-                <Transition>
-                    <div v-if="showPostMenu" class="absolute right-3 top-11 cursor-pointer">
-                        <div class="bg-white rounded-lg text-gray-600">
-                            <p class="hover:text-black w-[130px] px-3 py-1">Download</p>
-                            <p class="hover:text-black w-[130px] px-3 py-1">Share</p>
-                        </div>
-                    </div>
-                </Transition>
+                <a :href="route('post.download', attachment)" class="z-20 group-hover:opacity-100 transition-all w-8 h-8 flex items-center justify-center text-gray-100 bg-gray-700 rounded absolute right-2 top-2 cursor-pointer hover:bg-gray-800">
+                    <ArrowDownTrayIcon class="size-4"/>
+                </a>
                 <img v-if="isImage(attachment)" :src="attachment.url" class="bg-cover bg-no-repeat object-contain aspect-square rounded-lg">
                 <div v-else class="aspect-square bg-blue-100 flex flex-col items-center justify-center text-gray-500 hover:text-black active:text-black cursor-pointer rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16">

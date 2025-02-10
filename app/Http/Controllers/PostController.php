@@ -6,6 +6,7 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\PostAttachment;
+use Illuminate\Contracts\Mail\Attachable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -125,5 +126,11 @@ class PostController extends Controller
         $post->delete();
 
         return back();
+    }
+
+    public function downloadAttachment(PostAttachment $attachment)
+    {
+        // TODO check if user has permission to download
+        return response()->download(Storage::disk('public')->path($attachment->path), $attachment->name);
     }
 }
