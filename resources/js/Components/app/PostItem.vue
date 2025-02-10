@@ -7,13 +7,13 @@
     import PostUserHeader from './PostUserHeader.vue';
     import { router } from '@inertiajs/vue3';
     import { isImage } from '@/helpers';
-import { ArrowDownTrayIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon } from '@heroicons/vue/24/solid';
+import { ArrowDownTrayIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon, PaperClipIcon } from '@heroicons/vue/24/solid';
  
     const props = defineProps({
         post: Object
     });
 
-    const emit = defineEmits(['editClick'])
+    const emit = defineEmits(['editClick', 'attachmentClick'])
 
     const showPostMenu = ref(false);
     const modals = ref([]);
@@ -37,6 +37,11 @@ import { ArrowDownTrayIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon } from '@he
                 preserveScroll: true
             })        
         }
+    }
+
+    function openAttachment(index){
+        console.log(index);
+        emit('attachmentClick', props.post, index)
     }
 
 </script>
@@ -95,7 +100,7 @@ import { ArrowDownTrayIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon } from '@he
             </Disclosure>
         </div>
         <div class="grid gap-3" :class="[ post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2' ]">
-            <div v-for="(attachment, index) of post.attachments.slice(0, 4)" :key="index" class="relative">
+            <div @click="openAttachment(index)" v-for="(attachment, index) of post.attachments.slice(0, 4)" :key="index" class="relative cursor-pointer">
                 <div v-if="index === 3 && post.attachments.length > 4" class="absolute left-0 top-0 right-0 bottom-0 z-10 bg-black/60 text-white flex items-center justify-center text-2xl">
                     <p>+{{ post.attachments.length - 4}}</p>
                 </div>
@@ -104,11 +109,8 @@ import { ArrowDownTrayIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon } from '@he
                 </a>
                 <img v-if="isImage(attachment)" :src="attachment.url" class="bg-cover bg-no-repeat object-contain aspect-square rounded-lg">
                 <div v-else class="aspect-square bg-blue-100 flex flex-col items-center justify-center text-gray-500 hover:text-black active:text-black cursor-pointer rounded-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                    </svg>
-
-                    {{ attachment.name }}
+                    <PaperClipIcon size="4"/>
+                    <small>{{ attachment.name }}</small>
                 </div>
             </div>
         </div>
