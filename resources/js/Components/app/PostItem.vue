@@ -45,7 +45,7 @@ import { ChatBubbleLeftRightIcon, HandThumbUpIcon } from '@heroicons/vue/24/soli
     <div class="px-6 pt-6 mb-4 bg-[#f2f8f3] rounded-md shadow">
         <div class="flex items-center justify-between">
            <PostUserHeader :post="post" />
-                <Menu as="div" class="relative inline-block text-left">
+                <Menu as="div" class="relative z-10 inline-block text-left">
                 <div>
                     <MenuButton class="w-8 h-8 rounded-full hover:bg-black/5 transition flex items-center justify-center">
                         <EllipsisVerticalIcon class="w-5 h-5" aria-hidden="true"/>
@@ -107,7 +107,7 @@ import { ChatBubbleLeftRightIcon, HandThumbUpIcon } from '@heroicons/vue/24/soli
             post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
         ]">
             <div v-for="(attachment, index) of post.attachments.slice(0, 4)" :key="index" class="relative">
-                <div v-if="index === 3" class="absolute left-0 top-0 right-0 bottom-0 z-10 bg-black/60 text-white flex items-center justify-center text-2xl">
+                <div v-if="index === 3 && post.attachments.length > 4" class="absolute left-0 top-0 right-0 bottom-0 z-10 bg-black/60 text-white flex items-center justify-center text-2xl">
                     <p>+{{ post.attachments.length - 4}}</p>
                 </div>
                 <button :class="['w-6 h-6 absolute right-3 top-3 cursor-pointer rounded-sm z-20', { 'text-white bg-black': showPostMenu, 'text-black bg-white': !showPostMenu }]">
