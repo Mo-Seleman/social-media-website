@@ -1,9 +1,9 @@
 <script setup>
-import { ref, computed, watch, watchEffect } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle, } from '@headlessui/vue'
 import { XMarkIcon, PaperClipIcon, PaperAirplaneIcon, ArrowUturnLeftIcon } from '@heroicons/vue/24/solid'
 import PostUserHeader from './PostUserHeader.vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
 import Editor from './Editor.vue';
 import { isImage } from '@/helpers';
 
@@ -12,12 +12,16 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    modelValue: Boolean
+    modelValue: Boolean,
 })
+
+const attachmentExtentions = usePage().props.attachmentExtentions
 
 const emit = defineEmits(['update:modelValue'])
 
 const attachmentFiles = ref([])
+const attachmentErrors = ref([])
+const showExtentionsText = ref(false)
 
 const form = useForm({
     body: '',
@@ -45,7 +49,11 @@ function closeModal() {
 function resetModal() {
     form.reset()
     attachmentFiles.value = []
-    props.post.attachments.forEach(file => file.deleted = false);
+    showExtentionsText.value = false
+    attachmentErrors.value = []
+    if(props.post.attachments){
+        props.post.attachments.forEach(file => file.deleted = false);
+    }
 }
 
 function submit() {     
@@ -54,10 +62,13 @@ function submit() {
             form._method = 'PUT'
             form.post(route('post.update', props.post.id), {
             preserveScroll: true,
-            onSuccess: () => {
+            onSuccess: () => {                
                 show.value = false;
                 closeModal()
-            }
+            },
+            onError: (errors) => {
+             processErrors(errors)
+            },
         })
     } else {
         form.post(route('post.store'), {
@@ -65,27 +76,32 @@ function submit() {
             onSuccess: () => {
                 show.value = false; 
                 closeModal()           
-            }
+            },
+            onError: (errors) => {
+                processErrors(errors)
+            },
         })
     }
 }
 
 watch(() => props.post, () => {
-    console.log("%c Watch is Triggered", "color: orange; font-size: 16px;", props.post);
     form.body = props.post.body || ''
 })
 
 async function onAttachmentChoose($event) {
-    // $event.target.files = null;
-    console.log($event.target.files)
+    showExtentionsText.value = false;
     for (const file of $event.target.files) {
+        let parts = file.name.split('.')
+        let ext = parts.pop().toLowerCase()
+        if(!attachmentExtentions.includes(ext)){
+            showExtentionsText.value = true;
+        }
         const myFile = {
             file,
             url: await readFile(file)
         }
         attachmentFiles.value.push(myFile)
     }
-    console.log("onAttachmentChoose", attachmentFiles.value)
 }
 
 async function readFile(file) {
@@ -117,6 +133,15 @@ function undoDelete(myFile){
     form.deleted_files_ids = form.deleted_files_ids.filter(id => myFile.id != id)
 }
 
+function processErrors(errors){
+    for (const key in errors){
+        if(key.includes('.')){
+            const [, index] = key.split('.')
+            attachmentErrors.value[index] = errors[key]
+        }
+    }
+}
+
 </script>
 
 <template>
@@ -139,22 +164,13 @@ function undoDelete(myFile){
                                 <div class="p-4">
                                     <PostUserHeader :post="post" :showTime="false" class="mb-4"/>
                                     <Editor v-model="form.body"/>
+                                    <div v-if="showExtentionsText" class="border-l-4 border-amber-500 bg-amber-100 py-2 px-3 mt-3 text-gray-800">
+                                        Files must be one of the following extentions: <br>
+                                        <small>{{ attachmentExtentions.join(', ') }}</small>
+                                    </div>
                                     <div class="grid gap-3 my-3" :class="[ computedAttachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2' ]">
                                         <div v-for="(myFile, index) of computedAttachments" :key="index" class="relative">
-                                            <!-- <button :class="['w-6 h-6 absolute right-3 top-3 cursor-pointer rounded-sm', { 'text-white bg-black': showPostMenu, 'text-black bg-white': !showPostMenu }]">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
-                                                </svg>
-                                            </button>
-                                            <Transition>
-                                                <div v-if="showPostMenu" class="absolute right-3 top-11 cursor-pointer">
-                                                    <div class="bg-white rounded-lg text-gray-600">
-                                                        <p class="hover:text-black w-[130px] px-3 py-1">Download</p>
-                                                        <p class="hover:text-black w-[130px] px-3 py-1">Share</p>
-                                                    </div>
-                                                </div>
-                                            </Transition> -->
-
+                                        <div :class="attachmentErrors[index] ? 'border-2 border-red-500' : ''">
                                             <div v-if="myFile.deleted" class="absolute left-0 bottom-0 right-0 py-2 px-3 bg-black text-white flex justify-between items-center z-10">
                                                 <p>To Be Deleted</p>
                                                 <ArrowUturnLeftIcon @click="undoDelete(myFile)" class="size-4 cursor-pointer"/>
@@ -165,13 +181,15 @@ function undoDelete(myFile){
                                                 <XMarkIcon class="size-4" />
                                             </button>
 
-                                            <img v-if="isImage(myFile.file || myFile)" :src="myFile.url" class="bg-cover bg-no-repeat object-contain aspect-square rounded-lg" :class="[myFile.deleted ? 'opacity-50' : '']">
-                                            <div v-else class="aspect-square bg-blue-100 flex flex-col items-center justify-center text-gray-500 hover:text-black active:text-black cursor-pointer rounded-lg" :class="[myFile.deleted ? 'opacity-50' : '']">
+                                            <img v-if="isImage(myFile.file || myFile)" :src="myFile.url" class="bg-cover bg-no-repeat object-contain aspect-square" :class="[myFile.deleted ? 'opacity-50' : '']">
+                                            <div v-else class="aspect-square bg-blue-100 flex flex-col items-center justify-center text-gray-500 hover:text-black active:text-black cursor-pointer px-1" :class="[myFile.deleted ? 'opacity-50' : '']" >
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                                                 </svg>
                                                 <small class="text-center px-1"> {{ (myFile.file || myFile).name }} </small>
                                             </div>
+                                        </div>
+                                            <small class="text-red-700">{{ attachmentErrors[index] }}</small>
                                         </div>
                                     </div>
                                 </div>
