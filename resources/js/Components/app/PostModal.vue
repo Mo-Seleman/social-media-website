@@ -21,7 +21,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const attachmentFiles = ref([])
 const attachmentErrors = ref([])
-const showExtentionsText = ref(false)
+const formErrors = ref({})
 
 const form = useForm({
     body: '',
@@ -38,6 +38,19 @@ const show = computed({
 const computedAttachments = computed(() => {
     return [...attachmentFiles.value, ...(props.post.attachments || [])]     
 })
+
+const showExtentionsText = computed(() => {
+    for (let myFile of attachmentFiles.value){
+        const file = myFile.file
+        let parts = file.name.split('.')
+        let ext = parts.pop().toLowerCase()
+        if(!attachmentExtentions.includes(ext)){
+            showExtentionsText.value = true;
+            return true
+        }
+    }
+    return false;
+} )
  
 function closeModal() {
   show.value = false
@@ -48,6 +61,7 @@ function closeModal() {
 
 function resetModal() {
     form.reset()
+    formErrors.value = []
     attachmentFiles.value = []
     showExtentionsText.value = false
     attachmentErrors.value = []
@@ -89,13 +103,7 @@ watch(() => props.post, () => {
 })
 
 async function onAttachmentChoose($event) {
-    showExtentionsText.value = false;
     for (const file of $event.target.files) {
-        let parts = file.name.split('.')
-        let ext = parts.pop().toLowerCase()
-        if(!attachmentExtentions.includes(ext)){
-            showExtentionsText.value = true;
-        }
         const myFile = {
             file,
             url: await readFile(file)
@@ -134,11 +142,12 @@ function undoDelete(myFile){
 }
 
 function processErrors(errors){
+    formErrors.value = errors
     for (const key in errors){
         if(key.includes('.')){
             const [, index] = key.split('.')
             attachmentErrors.value[index] = errors[key]
-        }
+        } 
     }
 }
 
@@ -167,6 +176,9 @@ function processErrors(errors){
                                     <div v-if="showExtentionsText" class="border-l-4 border-amber-500 bg-amber-100 py-2 px-3 mt-3 text-gray-800">
                                         Files must be one of the following extentions: <br>
                                         <small>{{ attachmentExtentions.join(', ') }}</small>
+                                    </div>
+                                    <div v-if="formErrors.attachments" class="border-l-4 border-red-500 bg-red-100 py-2 px-3 mt-3 text-gray-800">
+                                         {{ formErrors.attachments }}
                                     </div>
                                     <div class="grid gap-3 my-3" :class="[ computedAttachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2' ]">
                                         <div v-for="(myFile, index) of computedAttachments" :key="index" class="relative">
