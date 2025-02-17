@@ -1,13 +1,13 @@
 <script setup>
     import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
     import { PencilIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/vue/20/solid'
-
     import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue';
     import { ref } from 'vue';
     import PostUserHeader from './PostUserHeader.vue';
     import { router } from '@inertiajs/vue3';
     import { isImage } from '@/helpers';
-import { ArrowDownTrayIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon, PaperClipIcon } from '@heroicons/vue/24/solid';
+    import { ArrowDownTrayIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon, PaperClipIcon } from '@heroicons/vue/24/solid';
+    import axiosClient from "@/axiosClient.js"
  
     const props = defineProps({
         post: Object
@@ -41,6 +41,17 @@ import { ArrowDownTrayIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon, PaperClipI
 
     function openAttachment(index){
         emit('attachmentClick', props.post, index)
+    }
+
+    function sendReaction(){
+        axiosClient.post(route('post.reaction', props.post), {
+            reaction: 'like'
+        })
+
+        .then(({ data }) => {
+            props.post.current_user_has_reaction = data.current_user_has_reaction
+            props.post.num_of_reactions = data.num_of_reactions
+        })
     }
 
 </script>
@@ -114,9 +125,9 @@ import { ArrowDownTrayIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon, PaperClipI
             </div>
         </div>
         <div class="flex gap-3 py-4">
-            <button class="bg-[#016b83] min-w-[100px] hover:bg-[#018aa8] text-white font-bold p-2 rounded-md flex justify-center items-center gap-1 flex-1">
+            <button @click="sendReaction" class="min-w-[100px] text-white font-bold p-2 rounded-md flex justify-center items-center gap-1 flex-1" :class="[post.current_user_has_reaction ? 'bg-[#018aa8] hover:bg-[#016b83]' : 'bg-[#016b83] hover:bg-[#018aa8]']">
                 <HandThumbUpIcon class="size-5 mr-1"/>
-                Like
+                {{ post.current_user_has_reaction ? 'Unlike' : 'Like' }} ({{ post.num_of_reactions }})
             </button>
             <button class="bg-[#016b83] min-w-[100px] hover:bg-[#018aa8] text-white font-bold p-2 rounded-md flex justify-center items-center gap-1 flex-1">
                 <ChatBubbleLeftRightIcon class="size-5 mr-1"/>
