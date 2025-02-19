@@ -4,14 +4,20 @@
     import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue';
     import { ref } from 'vue';
     import PostUserHeader from './PostUserHeader.vue';
-    import { router } from '@inertiajs/vue3';
+    import { router, usePage } from '@inertiajs/vue3';
     import { isImage } from '@/helpers';
     import { ArrowDownTrayIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon, PaperClipIcon } from '@heroicons/vue/24/solid';
     import axiosClient from "@/axiosClient.js"
+    import TextareaInput from '../TextareaInput.vue';
+    import IndigoButton from './indigoButton.vue';
+
+    const authUser = usePage().props.auth.user
  
     const props = defineProps({
         post: Object
     });
+
+    const newCommentText = ref('')
 
     const emit = defineEmits(['editClick', 'attachmentClick'])
 
@@ -54,10 +60,22 @@
         })
     }
 
+    function createComment(){
+        axiosClient.post(route('post.comment.create', props.post), {
+            comment: newCommentText.value
+        })
+
+        .then(({ data }) => {
+            newCommentText.value = ''
+            props.post.comments.unshift(data)
+            props.post.num_of_comments++;            
+        })
+    }
+
 </script>
 
 <template>
-    <div class="px-6 pt-6 mb-4 bg-[#f2f8f3] rounded-md shadow">
+    <div class="p-6 mb-4 bg-[#f2f8f3] rounded-md shadow">
         <div class="flex items-center justify-between">
            <PostUserHeader :post="post" />
                 <Menu as="div" class="relative z-10 inline-block text-left">
@@ -124,15 +142,43 @@
                 </div>
             </div>
         </div>
+        <Disclosure v-slot="{ open }">
         <div class="flex gap-3 py-4">
             <button @click="sendReaction" class="min-w-[100px] text-white font-bold p-2 rounded-md flex justify-center items-center gap-1 flex-1" :class="[post.current_user_has_reaction ? 'bg-[#018aa8] hover:bg-[#016b83]' : 'bg-[#016b83] hover:bg-[#018aa8]']">
                 <HandThumbUpIcon class="size-5 mr-1"/>
                 {{ post.current_user_has_reaction ? 'Unlike' : 'Like' }} ({{ post.num_of_reactions }})
             </button>
-            <button class="bg-[#016b83] min-w-[100px] hover:bg-[#018aa8] text-white font-bold p-2 rounded-md flex justify-center items-center gap-1 flex-1">
+            <DisclosureButton class="bg-[#016b83] min-w-[100px] hover:bg-[#018aa8] text-white font-bold p-2 rounded-md flex justify-center items-center gap-1 flex-1">
                 <ChatBubbleLeftRightIcon class="size-5 mr-1"/>
-                Comment
-            </button>
+                Comment ({{ post.num_of_comments }})
+            </DisclosureButton>
         </div>
+        <DisclosurePanel class="bg-gray-200 p-5">
+                <div class="flex gap-2 mb-3">
+                    <a href="javascript:void(0)">
+                        <img :src="authUser.avatar_url" class="w-[52px] rounded-full">
+                    </a>
+                    <div class="flex flex-1">
+                        <TextareaInput v-model="newCommentText" rows="1" maxlength="400" class="w-full overflow-auto resize-none rounded-r-none max-h-[85px]" placeholder="Enter your comment here"/>
+                        <IndigoButton @click="createComment" class="w-[80px] rounded-l-none">Submit</IndigoButton>
+                    </div>
+                </div>
+                <div class="overflow-scroll max-h-[440px]">
+                    <div v-for="comment of post.comments" :key="comment.id" class="mb-4">
+                        <div class="flex gap-2">
+                            <a href="javascript:void(0)">
+                                <img :src="comment.user.avatar_url" class="w-[52px] rounded-full">
+                            </a>
+                            <div>
+                                <h4 class="hover:underline">{{ comment.user.name }}</h4>
+                                <small class="text-xs text-gray-500">{{ comment.updated_at }}</small>
+                            </div>
+                        </div>
+                        <div class="text-sm flex flex-1 ml-16 [line-break:anywhere]" v-html="comment.comment">
+                        </div>
+                    </div>
+                </div>
+        </DisclosurePanel>
+      </Disclosure>
     </div>
 </template>

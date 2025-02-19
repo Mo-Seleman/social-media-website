@@ -17,7 +17,7 @@ const props = defineProps({
 
 const attachmentExtentions = usePage().props.attachmentExtentions
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'hide'])
 
 const attachmentFiles = ref([])
 const attachmentErrors = ref([])
