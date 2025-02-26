@@ -4,11 +4,12 @@
     import PostUserHeader from './PostUserHeader.vue';
     import { router, usePage } from '@inertiajs/vue3';
     import { isImage } from '@/helpers';
-    import { ArrowDownTrayIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon, PaperClipIcon } from '@heroicons/vue/24/solid';
+    import { ArrowDownTrayIcon, ChatBubbleLeftEllipsisIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon, PaperClipIcon } from '@heroicons/vue/24/solid';
+    import { HeartIcon } from '@heroicons/vue/24/outline'
     import axiosClient from "@/axiosClient.js"
     import TextareaInput from '../TextareaInput.vue';
     import IndigoButton from './indigoButton.vue';
-import EditDeleteDropdown from './EditDeleteDropdown.vue';
+    import EditDeleteDropdown from './EditDeleteDropdown.vue';
 
     const authUser = usePage().props.auth.user
     const editingComment = ref({})
@@ -73,7 +74,7 @@ import EditDeleteDropdown from './EditDeleteDropdown.vue';
 
     function deleteComment(comment) {
         if (window.confirm('Are you sure you want to delete this comment?')) {
-                axiosClient.delete(route('post.comment.delete', comment.id))
+                axiosClient.delete(route('comment.delete', comment.id))
                 .then(({ data }) => {
                     props.post.comments = props.post.comments.filter(c => c.id !== comment.id)
                     props.post.num_of_comments--;
@@ -92,7 +93,7 @@ import EditDeleteDropdown from './EditDeleteDropdown.vue';
     }
 
     function updateComment(){
-        axiosClient.put(route('post.comment.update', editingComment.value.id), {
+        axiosClient.put(route('comment.update', editingComment.value.id), {
             comment: editingComment.value.comment
         })
 
@@ -104,6 +105,17 @@ import EditDeleteDropdown from './EditDeleteDropdown.vue';
                 }
                 return c;
             })
+        })
+    }
+
+    function sendCommentReaction(comment){
+        axiosClient.post(route('comment.reaction', comment.id), {
+            reaction: 'like'
+        })
+
+        .then(({ data }) => {
+           comment.current_user_has_reaction = data.current_user_has_reaction
+           comment.num_of_reactions = data.num_of_reactions
         })
     }
 
@@ -167,7 +179,7 @@ import EditDeleteDropdown from './EditDeleteDropdown.vue';
                     </div>
                 </div>
                 <div class="overflow-scroll max-h-[440px]">
-                    <div v-for="comment of post.comments" :key="comment.id" class="mb-4">
+                    <div v-for="comment of post.comments" :key="comment.id" class="mb-6">
                         <div class="flex justify-between gap-2">
                             <div class="flex gap-2">
                                 <a href="javascript:void(0)">
@@ -187,7 +199,27 @@ import EditDeleteDropdown from './EditDeleteDropdown.vue';
                                 <IndigoButton @click="updateComment" class="w-[100px] rounded-l-none">update</IndigoButton>
                             </div>
                         </div>
-                        <div v-else class="text-md flex flex-1 items-center ml-16 [line-break:auto] min-h-[41px] max-w-[85%] py-2" v-html="comment.comment">
+                        <div v-else class="pl-16">
+                            <div class="flex items-center gap-5">
+                                <div class="text-md flex flex-1 items-center [line-break:auto] min-h-[41px] max-w-[85%] pb-2" v-html="comment.comment"></div>
+                                <div class="flex flex-col items-center">
+                                    <button @click="sendCommentReaction(comment)" class="hover:scale-[1.1] transition-all">                                
+                                        <HeartIcon class="size-5 stroke-[2.5]" :class="[comment.current_user_has_reaction ? 'stroke-red-500 fill-red-500' : 'stroke-gray-500']"/>
+                                    </button>
+                                    <span v-if="comment.num_of_reactions > 0" class="text-sm">{{ comment.num_of_reactions }}</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <!-- <button @click="sendCommentReaction(comment)" class="flex items-center gap-1 text-xs bg-[#ff4f40]/80 px-2 py-1 rounded-md text-white hover:scale-[1.1] transition-all font-bold tracking-wide">
+                                    <HandThumbUpIcon class="size-4"/>
+                                    <span class="mr-1">{{ comment.num_of_reactions }}</span>
+                                    {{ comment.current_user_has_reaction ? 'Unlike' : 'Like' }}
+                                </button> -->
+                                <button class="flex items-center gap-1 text-xs bg-[#ff4f40]/80 px-2 py-1 rounded-md text-white hover:scale-[1.1] transition-all font-bold tracking-wide">
+                                    <ChatBubbleLeftEllipsisIcon class="size-4"/>
+                                    Reply
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
