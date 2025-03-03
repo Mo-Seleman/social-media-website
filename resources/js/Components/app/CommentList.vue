@@ -156,13 +156,13 @@ function deleteComment(comment) {
                     <div class="flex items-center gap-5">
                         <div class="text-md flex flex-1 items-center [line-break:auto] min-h-[41px] max-w-[85%] pb-2" v-html="comment.comment"></div>
                         <div class="flex flex-col items-center">
-                            <button @click="sendCommentReaction(comment)" class="hover:scale-[1.1] transition-all">                                
+                            <button @click="sendCommentReaction(comment)" class="hover:scale-[0.95] transition-all">                                
                                 <HeartIcon class="size-5 stroke-[2.5]" :class="[comment.current_user_has_reaction ? 'stroke-red-500 fill-red-500' : 'stroke-gray-500']"/>
                             </button>
                             <span v-if="comment.num_of_reactions > 0" class="text-sm">{{ comment.num_of_reactions }}</span>
                         </div>
                     </div>
-                    <DisclosureButton class="flex items-center gap-1 text-xs bg-[#ff4f40]/80 px-2 py-1 rounded-md text-white hover:scale-[1.1] transition-all font-bold tracking-wide w-fit">
+                    <DisclosureButton class="flex items-center gap-1 text-xs bg-[#ff4f40]/80 px-2 py-1 rounded-md text-white hover:scale-[0.95] transition-all font-bold tracking-wide w-fit">
                         <ChatBubbleLeftEllipsisIcon class="size-4"/>
                         <span class="mr-1">{{ comment.num_of_comments }}</span>
                         Comments

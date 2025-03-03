@@ -69,11 +69,11 @@
         </div>
         <Disclosure v-slot="{ open }">
         <div class="flex gap-3 py-4">
-            <button @click="sendReaction" class="min-w-[100px] text-white font-bold p-2 rounded-md flex justify-center items-center gap-1 flex-1" :class="[post.current_user_has_reaction ? 'bg-[#018aa8] hover:bg-[#016b83]' : 'bg-[#016b83] hover:bg-[#018aa8]']">
+            <button @click="sendReaction" class="min-w-[100px] text-white font-bold p-2 rounded-md flex justify-center items-center gap-1 flex-1 hover:scale-[0.98] transition-all" :class="[post.current_user_has_reaction ? 'bg-[#018aa8] hover:bg-[#016b83]' : 'bg-[#016b83] hover:bg-[#018aa8]']">
                 <HandThumbUpIcon class="size-5 mr-1"/>
                 {{ post.current_user_has_reaction ? 'Unlike' : 'Like' }} ({{ post.num_of_reactions }})
             </button>
-            <DisclosureButton class="bg-[#016b83] min-w-[100px] hover:bg-[#018aa8] text-white font-bold p-2 rounded-md flex justify-center items-center gap-1 flex-1">
+            <DisclosureButton class="bg-[#016b83] min-w-[100px] hover:bg-[#018aa8] hover:scale-[0.98] transition-all text-white font-bold p-2 rounded-md flex justify-center items-center gap-1 flex-1">
                 <ChatBubbleLeftRightIcon class="size-5 mr-1"/>
                 Comment ({{ post.num_of_comments }})
             </DisclosureButton>
