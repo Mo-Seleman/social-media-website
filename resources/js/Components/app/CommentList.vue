@@ -24,6 +24,7 @@ const props = defineProps({
     }
 })
 
+const emit = defineEmits(['commentCreate', 'commentDelete'])
 
 const modals = ref([]);
 
@@ -47,7 +48,8 @@ function createComment(){
             if(props.parentComment){
                 props.parentComment.num_of_comments++
             }
-            props.post.num_of_comments++;            
+            props.post.num_of_comments++; 
+            emit('commentCreate', data)           
         })
     }
 
@@ -63,6 +65,7 @@ function deleteComment(comment) {
                 props.parentComment.num_of_comments--
             }
             props.post.num_of_comments--;
+            emit('commentDelete', comment)           
         })
 }
 
@@ -99,6 +102,20 @@ function deleteComment(comment) {
            comment.current_user_has_reaction = data.current_user_has_reaction
            comment.num_of_reactions = data.num_of_reactions
         })
+    }
+
+    function onCommentCreate(comment){
+        if(props.parentComment){
+            props.parentComment.num_of_comments++;
+        }
+        emit('commentCreate', comment)
+    }
+
+    function onCommentDelete(comment){
+        if(props.parentComment){
+            props.parentComment.num_of_comments--;
+        }
+        emit('commentDelete', comment)
     }
 
 </script>
@@ -151,7 +168,7 @@ function deleteComment(comment) {
                         Comments
                     </DisclosureButton>
                     <DisclosurePanel class="mt-3">
-                        <CommentList :post="post" :data="{comments: comment.comments}" :parentComment="comment" />
+                        <CommentList :post="post" :data="{comments: comment.comments}" :parentComment="comment" @commentCreate="onCommentCreate" @commentDelete="onCommentDelete"/>
                     </DisclosurePanel>
                 </Disclosure>
             </div>
