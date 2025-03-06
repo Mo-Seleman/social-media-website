@@ -2,13 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
+use App\Http\Enums\GroupUserRoleEnum;
+use App\Http\Enums\GroupUserStatusEnum;
+use App\Http\Requests\StoreGroupRequest;
+use App\Http\Requests\UpdateGroupRequest;
+use App\Http\Resources\GroupResource;
+use App\Models\Group;
+use App\Models\GroupUser;
+use Illuminate\Support\Facades\Auth;
 
 class GroupController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        return Inertia::render('MyGroups'); 
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreGroupRequest $request)
+    {
+        $data = $request->validated();
+        $data['user_id'] = Auth::id();
+        $group = Group::create($data);
+
+        $groupUserData = [
+            'status' => GroupUserStatusEnum::APPROVED->value,
+            'role' => GroupUserRoleEnum::ADMIN->value,
+            'user_id' => Auth::id(),
+            'group_id' => $group->id,
+            'created_by' => Auth::id()
+        ];
+
+        $groupUser = GroupUser::create($groupUserData);
+
+        return response(new GroupResource($group), 201);
+    }
+
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateGroupRequest $request, Group $group)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Group $group)
+    {
+        //
     }
 }
