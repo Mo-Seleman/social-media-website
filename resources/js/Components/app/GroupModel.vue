@@ -10,15 +10,11 @@ import axiosClient from "@/axiosClient.js"
 
 
 const props = defineProps({
-    post: {
-        type: Object,
-        required: true
-    },
     modelValue: Boolean,
 })
 
 
-const emit = defineEmits(['update:modelValue', 'hide'])
+const emit = defineEmits(['update:modelValue', 'hide', 'create'])
 
 const formErrors = ref({})
 
@@ -47,10 +43,11 @@ function resetModal() {
 
 function submit() {     
    axiosClient.post(route('group.create'), form)
-    .then(res => {
-        console.log(res)
+    .then(({data}) => {
         closeModal()
+        emit('create', data)
     })
+    .catch(err => console.log(err));
 }
 
 </script>

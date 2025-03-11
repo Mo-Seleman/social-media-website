@@ -10,6 +10,7 @@ use App\Http\Resources\GroupResource;
 use App\Models\Group;
 use App\Models\GroupUser;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class GroupController extends Controller
 {
@@ -18,7 +19,7 @@ class GroupController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('MyGroups'); 
     }
 
     /**
@@ -39,6 +40,8 @@ class GroupController extends Controller
         ];
 
         $groupUser = GroupUser::create($groupUserData);
+        $group->status = $groupUserData['status'];
+        $group->role = $groupUserData['role'];
 
         return response(new GroupResource($group), 201);
     }
