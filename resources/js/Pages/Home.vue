@@ -8,6 +8,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 defineProps({
     posts: Object,
+    groups: Array,
 });
 
 function handleImageError() {
@@ -24,7 +25,7 @@ function handleImageError() {
         <main>
             <div class="grid tablet:grid-cols-12 gap-3 mx-5">
                 <div class="hidden tablet:block col-span-3">
-                    <GroupList />
+                    <GroupList :groups="groups"/>
                 </div>
                 <div class="col-span-6 h-lvh overflow-y-scroll">
                     <CreatePost />

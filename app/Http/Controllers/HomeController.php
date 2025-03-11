@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Enums\GroupUserStatusEnum;
+use App\Http\Resources\GroupResource;
 use App\Http\Resources\PostResource;
+use App\Models\Group;
+// use App\Models\GroupUser;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +22,7 @@ class HomeController extends Controller
             ->withCount('reactions')
             ->with([
                 'comments' => function ($query) use ($userId) {
-                    $query  
+                    $query
                         ->withCount('reactions');
                 },
                 'reactions' => function ($query) use ($userId) {
@@ -30,12 +34,21 @@ class HomeController extends Controller
 
         $posts = PostResource::collection($posts);
 
-        if ($request->wantsJson()){
+        if ($request->wantsJson()) {
             return $posts;
         }
 
+        $groups = Group::query()
+            ->select(['groups.*', 'gu.status', 'gu.role'])
+            ->join('group_users AS gu', 'gu.group_id', 'groups.id')
+            ->where('gu.user_id', $userId)
+            ->orderBy('gu.role')
+            ->orderBy('name', 'desc')
+            ->get();
+
         return Inertia::render('Home', [
-            'posts' => $posts
+            'posts' => $posts,
+            'groups' => GroupResource::collection($groups)
         ]);
     }
 }
