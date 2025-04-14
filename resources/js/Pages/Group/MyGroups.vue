@@ -1,12 +1,17 @@
 <script setup>
-import GroupList from '@/Components/app/GroupList.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import GroupList from '@/Components/app/GroupList.vue';
+
+const props = defineProps({
+  groups: Array
+});
+
 </script>
 
 <template>
 <div>
     <AuthenticatedLayout>
-        <GroupList />
+        <GroupList :groups="groups"/>
     </AuthenticatedLayout>
   </div>
 </template>
