@@ -6,6 +6,7 @@ import { usePage, useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TabItem from '../Profile/Partials/TabItem.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import InviteUserModel from './InviteUserModel.vue';
 
 const authUser = usePage().props.auth.user; //Auth User Means Its There Account (So They Can Edit Nd What Not)
 
@@ -30,6 +31,7 @@ const imagesForm = useForm({
 
 const coverImageSrc = ref('');
 const thumbnailImageSrc = ref('');
+const showInviteUserModal = ref(false);
 
 function onCoverChange(event) {
     imagesForm.cover = event.target.files[0]
@@ -155,7 +157,7 @@ function submitThumbnailImage() {
                         </div>
                     <div class="flex justify-between items-center flex-1 p-3">
                         <h2 class="font-bold text-lg">{{ group.name }}</h2>
-                        <PrimaryButton v-if="isCurrentUserAdmin">Invite Users</PrimaryButton>
+                        <PrimaryButton @click="showInviteUserModal = true" v-if="isCurrentUserAdmin">Invite Users</PrimaryButton>
                         <PrimaryButton v-if="!group.role && group.auto_approval">Join Group</PrimaryButton>
                         <PrimaryButton v-if="!group.role && !group.auto_approval">Request To Join</PrimaryButton>
                     </div>
@@ -198,4 +200,5 @@ function submitThumbnailImage() {
             </div>
         </div>
     </AuthenticatedLayout>
+    <InviteUserModel v-model="showInviteUserModal"/>
 </template>
