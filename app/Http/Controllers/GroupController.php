@@ -2,17 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Group;
 use App\Models\GroupUser;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Enums\GroupUserRoleEnum;
 use App\Http\Resources\GroupResource;
+use App\Providers\AppServiceProvider;
+use App\Notifications\GroupInvitation;
 use App\Http\Enums\GroupUserStatusEnum;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreGroupRequest;
+use App\Http\Requests\InviteUsersRequest;
 use App\Http\Requests\UpdateGroupRequest;
+use App\Notifications\ApprovedInvitation;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class GroupController extends Controller
 {
@@ -25,12 +32,12 @@ class GroupController extends Controller
         $userId = Auth::id();
 
         $myGroups = Group::query()
-        ->select(['groups.*', 'gu.status', 'gu.role'])
-        ->join('group_users AS gu', 'gu.group_id', 'groups.id')
-        ->where('gu.user_id', $userId)
-        ->orderBy('gu.role')
-        ->orderBy('name', 'desc')
-        ->get();
+            ->select(['groups.*', 'gu.status', 'gu.role'])
+            ->join('group_users AS gu', 'gu.group_id', 'groups.id')
+            ->where('gu.user_id', $userId)
+            ->orderBy('gu.role')
+            ->orderBy('name', 'desc')
+            ->get();
 
         return Inertia::render('Group/MyGroups', [
             'groups' => GroupResource::collection($myGroups),
@@ -94,9 +101,9 @@ class GroupController extends Controller
 
     public function updateImage(Request $request, Group $group)
     {
-        
-        if(!$group->isAdmin(Auth::id())){
-            return response("You don't have permission to perform this action", 403);
+
+        if (!$group->isAdmin(Auth::id())) {
+            return response("You do not have permission to perform this action", 403);
         };
 
         $data = $request->validate([
@@ -109,31 +116,94 @@ class GroupController extends Controller
         $cover = $data['cover'] ?? null;
 
         $success = '';
-        
-        if($cover){
 
-            if ($group->cover_path){
+        if ($cover) {
+
+            if ($group->cover_path) {
                 Storage::disk('public')->delete($group->cover_path);
             }
 
-            $path = $cover->store('group-'.$group->id, 'public');
+            $path = $cover->store('group-' . $group->id, 'public');
             $group->update(['cover_path' => $path]);
             $success = 'Your Cover Image Has Succcessfully Been Updated';
         }
 
-        if($thumbnail){
+        if ($thumbnail) {
 
-            if ($group->thumbnail_path){
+            if ($group->thumbnail_path) {
                 Storage::disk('public')->delete($group->thumbnail_path);
             }
 
-            $path = $thumbnail->store('group-'.$group->id, 'public');
+            $path = $thumbnail->store('group-' . $group->id, 'public');
             $group->update(['thumbnail_path' => $path]);
             $success = 'Your thumbnail Image Has Succcessfully Been Updated';
-
         }
-        
+
         return back()->with('success', $success);
+    }
+
+    public function inviteUsers(InviteUsersRequest $request, Group $group)
+    {
+
+        $data = $request->validated();
+
+        $user = $request->user;
+
+        $groupUser = $request->groupUser;
+
+
+        // Delete existing invite when invitaed more than once and generate new one
+        if ($groupUser) {
+            $groupUser->delete();
+        };
+
+        $hours = 24;
+        $token = Str::random(256);
+
+        GroupUser::create([
+            'status' => GroupUserStatusEnum::PENDING->value,
+            'role' => GroupUserRoleEnum::USER->value,
+            'token' => $token,
+            'token_expiry_date' => Carbon::now()->addHours($hours),
+            'user_id' => $user->id,
+            'group_id' => $group->id,
+            'created_by' => Auth::id(),
+        ]);
+
+        $user->notify(new GroupInvitation($group, $hours, $token));
+
+        return back()->with('success', 'Invite sent!');
+    }
+
+    public function approveInvitation(string $token)
+    {
+        $groupUser = GroupUser::query()
+            ->where('token', $token)
+            ->first();
+
+        $errorTitle = '';
+
+        if (!$groupUser) {
+            $errorTitle = 'The token is invalid';
+        } else if ($groupUser->token_used || $groupUser->status === GroupUserStatusEnum::APPROVED->value) {
+            $errorTitle = 'The link has already been used';
+        } else if ($groupUser->token_expiry_date < Carbon::now()) {
+            $errorTitle = 'The link has expired';
+        }
+
+        if($errorTitle){
+            return Inertia::render('Error', compact('errorTitle'));
+        }
+
+        $groupUser->status = GroupUserStatusEnum::APPROVED->value;
+        $groupUser->token_used = Carbon::now();
+        $groupUser->save();
+
+        $adminUser = $groupUser->adminUser;
+
+        $adminUser->notify(new ApprovedInvitation($groupUser->group, $groupUser->user));
+
+        return redirect(route('group.profile', $groupUser->group))->with('success', 'You are now a member of ' .$groupUser->group->name. '. Welcome!');
 
     }
 }
