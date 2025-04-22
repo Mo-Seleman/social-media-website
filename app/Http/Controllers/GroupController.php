@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Notifications\GroupRequest;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Group;
@@ -19,6 +20,7 @@ use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\InviteUsersRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Notifications\ApprovedInvitation;
+use Illuminate\Support\Facades\Notification;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class GroupController extends Controller
@@ -191,7 +193,7 @@ class GroupController extends Controller
             $errorTitle = 'The link has expired';
         }
 
-        if($errorTitle){
+        if ($errorTitle) {
             return Inertia::render('Error', compact('errorTitle'));
         }
 
@@ -203,7 +205,32 @@ class GroupController extends Controller
 
         $adminUser->notify(new ApprovedInvitation($groupUser->group, $groupUser->user));
 
-        return redirect(route('group.profile', $groupUser->group))->with('success', 'You are now a member of ' .$groupUser->group->name. '. Welcome!');
+        return redirect(route('group.profile', $groupUser->group))->with('success', 'You are now a member of ' . $groupUser->group->name . '. Welcome!');
+    }
 
+    public function join(Group $group)
+    {
+        $user = \request()->user();
+
+        $status =  GroupUserStatusEnum::APPROVED->value;
+
+        $successMessage = 'You are now a member of ' . $group->name . '. Welcome!';
+
+        if (!$group->auto_approval) {
+            $status =  GroupUserStatusEnum::PENDING->value;
+
+            Notification::send($group->adminUsers, new GroupRequest($group, $user));
+            $successMessage = 'Request Sent! You Will Be Notified When Your Request Is Approved';
+        }
+
+        GroupUser::create([
+            'status' => $status,
+            'role' => GroupUserRoleEnum::USER->value,
+            'user_id' => $user->id,
+            'group_id' => $group->id,
+            'created_by' => $user->id,
+        ]);
+
+        return back()->with('success', $successMessage);
     }
 }

@@ -5,10 +5,12 @@ namespace App\Models;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Enums\GroupUserRoleEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Group extends Model
 {
@@ -34,5 +36,10 @@ class Group extends Model
     public function isAdmin($userId): bool
     {
         return $this->currentUserGroup?->user_id == $userId;
+    }
+
+    public function adminUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'group_users')->wherePivot('role', GroupUserRoleEnum::ADMIN->value);
     }
 }
