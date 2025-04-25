@@ -8,7 +8,7 @@ defineProps({
 </script>
 
 <template>
-    <div class="pb-3 transition-transform duration-300 transform hover:scale-105 cursor-pointer">
+    <div class="pb-3 transition-transform duration-300 transform hover:scale-[0.975] cursor-pointer">
         <Link :href="route('group.profile', group.slug)">
             <div class="flex items-start gap-3 bg-[#016b83] p-3 rounded-md">
                 <img :src="group.thumbnail_url" alt="" class="w-[48px] rounded-full" />
