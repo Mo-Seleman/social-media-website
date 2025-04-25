@@ -7,10 +7,13 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TabItem from '../Profile/Partials/TabItem.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InviteUserModel from './InviteUserModel.vue';
+import UserListItem from '@/Components/app/UserListItem.vue';
+import TextInput from '@/Components/TextInput.vue';
 
 const authUser = usePage().props.auth.user; //Auth User Means Its There Account (So They Can Edit Nd What Not)
 
 const isCurrentUserAdmin = computed(() => props.group.role === 'admin')
+const isJoinedToGroup = computed(() => !!props.group.role && props.group.status === 'approved')
 
 const props = defineProps({
     errors: Object,
@@ -20,6 +23,8 @@ const props = defineProps({
     group: {
         type: Object, //user Is The Person Thats Logged In But They Would Be Viewing Someone Elses Acc
     },
+    users: Array,
+    requests: Array,
 });
 
 const showNotification = ref(true);
@@ -32,6 +37,7 @@ const imagesForm = useForm({
 const coverImageSrc = ref('');
 const thumbnailImageSrc = ref('');
 const showInviteUserModal = ref(false);
+const searchKeyword = ref('');
 
 function onCoverChange(event) {
     imagesForm.cover = event.target.files[0]
@@ -92,13 +98,25 @@ function submitThumbnailImage() {
 }
 
 function joinGroup(){
-    const form = useForm({
-
-    })
-
+    const form = useForm({})
     form.post(route('group.join', props.group.slug))
 }
 
+function approveUser(user){
+    const form = useForm({
+        user_id: user.id,
+        action: 'approve',
+    })
+    form.post(route('group.approveRequest', props.group.slug))
+}
+
+function rejectUser(user){
+    const form = useForm({
+        user_id: user.id,
+        action: 'reject',
+    })
+    form.post(route('group.approveRequest', props.group.slug))
+}
 </script>
 
 <template>
@@ -115,7 +133,7 @@ function joinGroup(){
                 <div class="group">
                     <img :src="coverImageSrc || group.cover_url || '/img/default_cover.webp'"
                         class="w-full h-[300px] object-cover" alt="Profile Cover Photo">
-                    <div  v-if="isCurrentUserAdmin" class="absolute top-2 right-2">
+                    <div v-if="isCurrentUserAdmin" class="absolute top-2 right-2">
                         <button v-if="!coverImageSrc"
                             class="bg-gray-50 hover:bg-gray-100 text-gray-800 py-1 px-2 text-sm flex items-center gap-x-1 opacity-0 transition-all group-hover:opacity-100 hover:scale-105">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -144,31 +162,36 @@ function joinGroup(){
                     </div>
                 </div>
                 <div class="flex">
-                    <div class="relative group/thumbnail flex items-center justify-center mt-[-75px] ml-[48px] w-[150px] h-[150px]">
-                        <img :src="thumbnailImageSrc || group.thumbnail_url || '/img/default_avatar.jpg'" class="w-full h-full object-cover rounded-full" alt="User Profile Picture">
-                            <button v-if="isCurrentUserAdmin && !thumbnailImageSrc"
-                                class=" absolute left-0 top-0 right-0 bottom-0 bg-black/50 text-gray-200 rounded-full flex items-center justify-center transition-all opacity-0 group-hover/thumbnail:opacity-100">
-                                <CameraIcon class="size-8" />
-                                <input type="file" @change="onThumbnailChange"
-                                    class="absolute left-0 top-0 right-0 bottom-0 opacity-0 cursor-pointer" />
+                    <div
+                        class="relative group/thumbnail flex items-center justify-center mt-[-75px] ml-[48px] w-[150px] h-[150px]">
+                        <img :src="thumbnailImageSrc || group.thumbnail_url || '/img/default_avatar.jpg'"
+                            class="w-full h-full object-cover rounded-full" alt="User Profile Picture">
+                        <button v-if="isCurrentUserAdmin && !thumbnailImageSrc"
+                            class=" absolute left-0 top-0 right-0 bottom-0 bg-black/50 text-gray-200 rounded-full flex items-center justify-center transition-all opacity-0 group-hover/thumbnail:opacity-100">
+                            <CameraIcon class="size-8" />
+                            <input type="file" @change="onThumbnailChange"
+                                class="absolute left-0 top-0 right-0 bottom-0 opacity-0 cursor-pointer" />
+                        </button>
+                        <div v-else-if="isCurrentUserAdmin" class="absolute top-1 right-1 flex flex-col gap-2">
+                            <button @click="resetThumbnailImage"
+                                class="w-7 h-7 flex items-center justify-center bg-red-500/80 text-white rounded-full">
+                                <XMarkIcon class="size-4" />
                             </button>
-                            <div v-else-if="isCurrentUserAdmin" class="absolute top-1 right-1 flex flex-col gap-2">
-                                <button @click="resetThumbnailImage"
-                                    class="w-7 h-7 flex items-center justify-center bg-red-500/80 text-white rounded-full">
-                                    <XMarkIcon class="size-4" />
-                                </button>
-                                <button @click="submitThumbnailImage"
-                                    class="w-7 h-7 flex items-center justify-center bg-emerald-500/80 text-white rounded-full">
-                                    <CheckCircleIcon class="size-4" />
-                                </button>
-                            </div>
+                            <button @click="submitThumbnailImage"
+                                class="w-7 h-7 flex items-center justify-center bg-emerald-500/80 text-white rounded-full">
+                                <CheckCircleIcon class="size-4" />
+                            </button>
                         </div>
+                    </div>
                     <div class="flex justify-between items-center flex-1 p-3">
                         <h2 class="font-bold text-lg">{{ group.name }}</h2>
                         <PrimaryButton v-if="!authUser" :href="route('login')">Login to join this group</PrimaryButton>
-                        <PrimaryButton @click="showInviteUserModal = true" v-if="isCurrentUserAdmin">Invite Users</PrimaryButton>
-                        <PrimaryButton v-if="authUser && !group.role && group.auto_approval" @click="joinGroup">Join Group</PrimaryButton>
-                        <PrimaryButton v-if="authUser && !group.role && !group.auto_approval" @click="joinGroup">Request To Join</PrimaryButton>
+                        <PrimaryButton @click="showInviteUserModal = true" v-if="isCurrentUserAdmin">Invite Users
+                        </PrimaryButton>
+                        <PrimaryButton v-if="authUser && !group.role && group.auto_approval" @click="joinGroup">Join
+                            Group</PrimaryButton>
+                        <PrimaryButton v-if="authUser && !group.role && !group.auto_approval" @click="joinGroup">Request
+                            To Join</PrimaryButton>
                     </div>
                 </div>
             </div>
@@ -178,11 +201,11 @@ function joinGroup(){
                         <Tab v-slot="{ selected }" as="tamplate">
                             <TabItem text="Posts" :selected="selected" />
                         </Tab>
-                        <Tab v-slot="{ selected }" as="tamplate">
-                            <TabItem text="Followers" :selected="selected" />
+                        <Tab v-if="isJoinedToGroup" v-slot="{ selected }" as="tamplate">
+                            <TabItem text="Users" :selected="selected" />
                         </Tab>
-                        <Tab v-slot="{ selected }" as="tamplate">
-                            <TabItem text="Following" :selected="selected" />
+                        <Tab v-if="isCurrentUserAdmin" v-slot="{ selected }" as="tamplate">
+                            <TabItem text="Requests" :selected="selected" />
                         </Tab>
                         <Tab v-slot="{ selected }" as="tamplate">
                             <TabItem text="Photos" :selected="selected" />
@@ -192,14 +215,22 @@ function joinGroup(){
                     <TabPanels class="mt-2">
                         <TabPanel class="bg-white p-3 shadow">
                             <pre>
-                            {{ user }}
-                        </pre>
+                                {{ users }}
+                            </pre>
                         </TabPanel>
-                        <TabPanel class="bg-white p-3 shadow">
-                            Followers Content
+                        <TabPanel v-if="isJoinedToGroup" class="bg-white p-3 shadow">
+                            <TextInput v-model="searchKeyword" placeholder="Search For a User" class="mt-2 w-full text-black"/>
+                            <div class="grid grid-cols-2 gap-3 py-3">
+                                <UserListItem v-for="user of users" :user="user" :key="user.id" />
+                            </div>
                         </TabPanel>
-                        <TabPanel class="bg-white p-3 shadow">
-                            Following Content
+                        <TabPanel v-if="isCurrentUserAdmin" class="bg-white p-3 shadow">
+                            <div v-if="requests.length" class="grid grid-cols-2 gap-3 ">
+                                <UserListItem v-for="user of requests" :user="user" :key="user.id" :for-approve="true" @approve="approveUser" @reject="rejectUser"/>
+                            </div>
+                            <div v-else class="py-8 text-center">
+                                <p>No pending requests</p>
+                            </div>
                         </TabPanel>
                         <TabPanel class="bg-white p-3 shadow">
                             Photos Content
@@ -209,5 +240,5 @@ function joinGroup(){
             </div>
         </div>
     </AuthenticatedLayout>
-    <InviteUserModel v-model="showInviteUserModal"/>
+    <InviteUserModel v-model="showInviteUserModal" />
 </template>

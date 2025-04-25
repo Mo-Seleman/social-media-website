@@ -6,6 +6,7 @@ use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Enums\GroupUserRoleEnum;
+use App\Http\Enums\GroupUserStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -41,5 +42,13 @@ class Group extends Model
     public function adminUsers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'group_users')->wherePivot('role', GroupUserRoleEnum::ADMIN->value);
+    }
+    public function pendingUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'group_users')->wherePivot('status', GroupUserStatusEnum::PENDING->value);
+    }
+    public function approvedUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'group_users')->wherePivot('status', GroupUserStatusEnum::APPROVED->value);
     }
 }
