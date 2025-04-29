@@ -9,6 +9,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InviteUserModel from './InviteUserModel.vue';
 import UserListItem from '@/Components/app/UserListItem.vue';
 import TextInput from '@/Components/TextInput.vue';
+import GroupForm from '@/Components/app/GroupForm.vue';
 
 const authUser = usePage().props.auth.user; //Auth User Means Its There Account (So They Can Edit Nd What Not)
 
@@ -33,6 +34,12 @@ const imagesForm = useForm({
     cover: null,
     thumbnail: null,
 });
+
+const aboutForm = useForm({
+    name: props.group.name,
+    auto_approval: !!props.group.auto_approval,
+    about: props.group.about,
+})
 
 const coverImageSrc = ref('');
 const thumbnailImageSrc = ref('');
@@ -134,6 +141,12 @@ function onRoleChange(user, role){
         preserveScroll: true
     })
 }
+
+function updateGroup(){
+    aboutForm.put(route('group.update', props.group.slug), {
+        preserveScroll: true
+    })
+}
 </script>
 
 <template>
@@ -227,6 +240,9 @@ function onRoleChange(user, role){
                         <Tab v-slot="{ selected }" as="tamplate">
                             <TabItem text="Photos" :selected="selected" />
                         </Tab>
+                        <Tab v-if="isCurrentUserAdmin" v-slot="{ selected }" as="tamplate">
+                            <TabItem text="About" :selected="selected" />
+                        </Tab>
                     </TabList>
 
                     <TabPanels class="mt-2">
@@ -251,6 +267,10 @@ function onRoleChange(user, role){
                         </TabPanel>
                         <TabPanel class="bg-white p-3 shadow">
                             Photos Content
+                        </TabPanel>
+                        <TabPanel v-if="isCurrentUserAdmin" class="bg-white p-3 shadow">
+                            <GroupForm :form="aboutForm" />
+                            <PrimaryButton @click="updateGroup"> Submit </PrimaryButton>
                         </TabPanel>
                     </TabPanels>
                 </TabGroup>

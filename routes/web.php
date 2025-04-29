@@ -18,6 +18,8 @@ Route::get('/group/approve-invitation/{token}', [GroupController::class, 'approv
 
 Route::middleware('auth')->group(function () {
     Route::post('/profile/update-images', [ProfileController::class, 'updateImage'])->name('profile.updateImages');
+    Route::post('/group', [GroupController::class, 'store'])->name('group.create');
+    Route::put('/group/{group:slug}', [GroupController::class, 'update'])->name('group.update');
     Route::post('/group/update-images/{group:slug}', [GroupController::class, 'updateImage'])->name('group.updateImages');
     Route::post('/group/invite/{group:slug}', [GroupController::class, 'inviteUsers'])->name('group.inviteUsers');
     Route::post('/group/join/{group:slug}', [GroupController::class, 'join'])->name('group.join');
@@ -39,7 +41,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/post/comment/{comment}', [PostController::class, 'deleteComment'])->name('comment.delete');
     Route::put('/comment/{comment}', [PostController::class, 'updateComment'])->name('comment.update');
     Route::post('/comment/{comment}/reaction', [PostController::class, 'commentReaction'])->name('comment.reaction');
-    Route::post('/group', [GroupController::class, 'store'])->name('group.create');
 });
 
 require __DIR__.'/auth.php';

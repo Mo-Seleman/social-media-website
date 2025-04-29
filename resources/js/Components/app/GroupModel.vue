@@ -3,10 +3,8 @@ import { ref, computed } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle, } from '@headlessui/vue'
 import { BookmarkIcon, XMarkIcon } from '@heroicons/vue/24/solid'
 import { useForm } from '@inertiajs/vue3';
-import TextareaInput from '../TextareaInput.vue';
-import Checkbox from '@/Components/Checkbox.vue';
-import TextInput from '@/Components/TextInput.vue';
 import axiosClient from "@/axiosClient.js"
+import GroupForm from './GroupForm.vue';
 
 
 const props = defineProps({
@@ -70,20 +68,7 @@ function submit() {
                                     </button>
                                 </DialogTitle>
                                 <div class="p-4">
-                                    <div class="mb-3">
-                                        <label class="capitalize">Group name</label>
-                                        <TextInput type="text" class="mt-1 block w-full" v-model="form.name" required autofocus />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="capitalize">
-                                        <Checkbox name="remember" v-model:checked="form.auto_approval" />
-                                        Enable auto approval
-                                    </label>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="capitalize">About group</label>
-                                        <TextareaInput v-model="form.about" class="w-full"/>
-                                    </div>
+                                   <GroupForm :form="form" />
                                 </div>
                                 <div class="py-3 px-4 flex justify-end gap-2">
                                     <button class="bg-[#016b83] min-w-[100px] hover:scale-[0.96] transition-all text-white font-bold p-2 rounded-md flex justify-center items-center gap-1">
