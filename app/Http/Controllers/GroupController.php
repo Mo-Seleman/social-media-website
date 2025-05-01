@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Post;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Group;
@@ -25,6 +26,7 @@ use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\InviteUsersRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Http\Resources\GroupUserResource;
+use App\Http\Resources\PostResource;
 use App\Notifications\ApprovedInvitation;
 use Illuminate\Support\Facades\Notification;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -55,11 +57,32 @@ class GroupController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function profile(Group $group)
+    public function profile(Request $request, Group $group)
     {
         $group->load('currentUserGroup');
 
-        // $users = $group->approvedUsers()->orderBy('name')->get();
+        $userId = Auth::id();
+
+        if ($group->hasApprovedUser($userId)) {
+            $posts = Post::postsForTimeline($userId)
+                ->where('group_id', $group->id)
+                ->paginate(10);
+
+            $posts = PostResource::collection($posts);
+        } else {
+
+            return Inertia::render('Group/View', [
+                'success' => session('success'),
+                'group' => new GroupResource($group),
+                'posts' => null,
+                'users' => [],
+                'requests' => []
+            ]);
+        }
+
+        if ($request->wantsJson()) {
+            return PostResource::collection($posts);
+        }
 
         $users = User::query()
             ->select(['users.*', 'gu.role', 'gu.status', 'gu.group_id'])
@@ -73,9 +96,11 @@ class GroupController extends Controller
         return Inertia::render('Group/View', [
             'success' => session('success'),
             'group' => new GroupResource($group),
+            'posts' => $posts,
             'users' => GroupUserResource::collection($users),
             'requests' => UserResource::collection($requests)
         ]);
+
     }
 
     /**
@@ -303,7 +328,7 @@ class GroupController extends Controller
 
         $user_id = $data['user_id'];
 
-        if($group->isOwner($user_id)){
+        if ($group->isOwner($user_id)) {
             return response("You cannot change the role of the group owner", 403);
         }
 
@@ -312,12 +337,12 @@ class GroupController extends Controller
             ->first();
 
         if ($groupUser) {
-                $groupUser->role = $data['role'];
-                $groupUser->save();
-            };
+            $groupUser->role = $data['role'];
+            $groupUser->save();
+        };
 
-            $groupUser->user->notify(new RoleChange($group, $data['role']));
+        $groupUser->user->notify(new RoleChange($group, $data['role']));
 
-            return back();
-        }
+        return back();
+    }
 }

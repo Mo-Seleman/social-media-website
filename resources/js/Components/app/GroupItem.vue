@@ -14,7 +14,7 @@ defineProps({
                 <img :src="group.thumbnail_url" alt="" class="w-[48px] rounded-full" />
                 <div class="flex-1">
                     <div class="flex justify-between">
-                        <h3 class="font-bold uppercase text-md">{{ group.name }}</h3>
+                        <h3 class="font-semibold uppercase text-md">{{ group.name }}</h3>
                         <small class="capitalize">{{ group.status === 'approved' ? (group.role === 'admin' ? group.role : '') : 'pending approval' }}</small>
                     </div>
                     <p class="text-sm leading-4">

@@ -28,11 +28,11 @@ const selected = ref('');
     <div class="transition-transform duration-300 transform">
         <div class="flex items-center gap-3 bg-[#016b83] p-3 rounded-md">
             <Link :href="route('profile', user.username)">
-            <img :src="user.avatar_url || '/img/default_avatar.jpg'" class="w-[38px] rounded-full" />
+                <img :src="user.avatar_url" class="w-[38px] rounded-full" />
             </Link>
             <div class="flex justify-between items-center flex-1">
                 <Link :href="route('profile', user.username)">
-                <h3 class="font-bold text-lg text-white hover:underline">{{ user.name }}</h3>
+                    <h3 class="semibold text-lg text-white hover:underline">{{ user.name }}</h3>
                 </Link>
                 <div v-if="forApprove" class="flex gap-1">
                     <button @click.prevent.stop="$emit('approve', user)"

@@ -1,6 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
 
 /* Hide scrollbar for Chrome, Safari, and Opera */
 ::-webkit-scrollbar {
@@ -99,4 +102,12 @@
 .ck-content-output a {
     text-decoration: underline;
     color: blue;
+}
+
+/* * {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+} */
+
+* {
+  font-family: "Fredoka", sans-serif;
 }

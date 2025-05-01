@@ -10,6 +10,8 @@ import InviteUserModel from './InviteUserModel.vue';
 import UserListItem from '@/Components/app/UserListItem.vue';
 import TextInput from '@/Components/TextInput.vue';
 import GroupForm from '@/Components/app/GroupForm.vue';
+import PostList from '@/Components/app/PostList.vue';
+import CreatePost from '@/Components/app/CreatePost.vue';
 
 const authUser = usePage().props.auth.user; //Auth User Means Its There Account (So They Can Edit Nd What Not)
 
@@ -24,6 +26,7 @@ const props = defineProps({
     group: {
         type: Object, //user Is The Person Thats Logged In But They Would Be Viewing Someone Elses Acc
     },
+    posts: Object,
     users: Array,
     requests: Array,
 });
@@ -136,7 +139,7 @@ function onRoleChange(user, role){
         user_id: user.id,
         role: role.toLowerCase()
     })
-
+    
     form.post(route('group.changeRole', props.group.slug), {
         preserveScroll: true
     })
@@ -214,7 +217,7 @@ function updateGroup(){
                         </div>
                     </div>
                     <div class="flex justify-between items-center flex-1 p-3">
-                        <h2 class="font-bold text-lg">{{ group.name }}</h2>
+                        <h2 class="font-medium text-lg">{{ group.name }}</h2>
                         <PrimaryButton v-if="!authUser" :href="route('login')">Login to join this group</PrimaryButton>
                         <PrimaryButton @click="showInviteUserModal = true" v-if="isCurrentUserAdmin">Invite Users
                         </PrimaryButton>
@@ -245,21 +248,29 @@ function updateGroup(){
                         </Tab>
                     </TabList>
 
-                    <TabPanels class="mt-2">
-                        <TabPanel class="bg-white p-3 shadow">
-                            <pre>
-                                {{ users }}
-                            </pre>
+                    <TabPanels class="mt-2 px-4">
+                        <TabPanel>
+                            <template v-if="posts">
+                                <CreatePost :group="group" />
+                                <PostList :posts="posts.data" class="flex-1" />
+                            </template>
+                            <div v-else class="py-8 text-center">
+                                <p> You do not have permission to view theses posts </p>
+                            </div>
                         </TabPanel>
                         <TabPanel v-if="isJoinedToGroup" class="bg-white p-3 shadow">
-                            <TextInput v-model="searchKeyword" placeholder="Search For a User" class="mt-2 w-full text-black"/>
+                            <TextInput v-model="searchKeyword" placeholder="Search For a User"
+                                class="mt-2 w-full text-black" />
                             <div class="grid grid-cols-2 gap-3 py-3">
-                                <UserListItem v-for="user of users" :user="user" :key="user.id" :show-role-dropdown="isCurrentUserAdmin" :disable-role-dropdown="group.user_id === user.id" @role-change="onRoleChange"/>
+                                <UserListItem v-for="user of users" :user="user" :key="user.id"
+                                    :show-role-dropdown="isCurrentUserAdmin"
+                                    :disable-role-dropdown="group.user_id === user.id" @role-change="onRoleChange" />
                             </div>
                         </TabPanel>
                         <TabPanel v-if="isCurrentUserAdmin" class="bg-white p-3 shadow">
                             <div v-if="requests.length" class="grid grid-cols-2 gap-3 ">
-                                <UserListItem v-for="user of requests" :user="user" :key="user.id" :for-approve="true" @approve="approveUser" @reject="rejectUser"/>
+                                <UserListItem v-for="user of requests" :user="user" :key="user.id" :for-approve="true"
+                                    @approve="approveUser" @reject="rejectUser" />
                             </div>
                             <div v-else class="py-8 text-center">
                                 <p>No pending requests</p>
