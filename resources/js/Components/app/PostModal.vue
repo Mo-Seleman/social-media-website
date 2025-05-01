@@ -12,6 +12,10 @@ const props = defineProps({
         type: Object,
         required: true
     },
+    group: {
+        type: Object,
+        default: null
+    },
     modelValue: Boolean,
 })
 
@@ -26,6 +30,7 @@ const formErrors = ref({})
 const form = useForm({
     body: '',
     attachments: [],
+    group_id: null,
     deleted_files_ids: [],
     _method: 'POST',
 })
@@ -61,7 +66,7 @@ function closeModal() {
 
 function resetModal() {
     form.reset()
-    formErrors.value = []
+    formErrors.value = {}
     attachmentFiles.value = []
     showExtentionsText.value = false
     attachmentErrors.value = []
@@ -70,7 +75,11 @@ function resetModal() {
     }
 }
 
-function submit() {     
+function submit() {  
+    if(props.group){
+        form.group_id = props.group.id;
+    }
+    
     form.attachments = attachmentFiles.value.map(myFile => myFile.file)
     if(props.post.id){    
             form._method = 'PUT'
@@ -172,6 +181,11 @@ function processErrors(errors){
                                 </DialogTitle>
                                 <div class="p-4">
                                     <PostUserHeader :post="post" :showTime="false" class="mb-4"/>
+
+                                    <div v-if="formErrors.group_id" class="bg-red-200 border-l-[15px] border-l-red-600 text-gray-600 py-2 px-3 my-1 text-sm">
+                                        <p>{{ formErrors.group_id }}</p>
+                                    </div>
+
                                     <Editor v-model="form.body"/>
                                     <div v-if="showExtentionsText" class="border-l-4 border-amber-500 bg-amber-100 py-2 px-3 mt-3 text-gray-800">
                                         Files must be one of the following extentions: <br>
@@ -206,12 +220,12 @@ function processErrors(errors){
                                     </div>
                                 </div>
                                 <div class="py-3 px-4 flex gap-2">
-                                    <button @click="submit" type="button" class="flex items-center justify-center bg-[#016b83] p-2 text-white font-bold rounded-md hover:bg-[#018aa8] w-full relative">
+                                    <button @click="submit" type="button" class="flex items-center justify-center bg-[#016b83] p-2 text-white font-medium rounded-md hover:bg-[#018aa8] w-full relative">
                                         <PaperClipIcon class="size-5 mr-1"/>
                                         Attach Files
                                         <input @click.stop @change="onAttachmentChoose" type="file" multiple class="absolute left-0 top-0 right-0 bottom-0 opacity-0">
                                     </button>
-                                    <button @click="submit" type="button" class="flex items-center justify-center bg-[#016b83] p-2 text-white font-bold rounded-md hover:bg-[#018aa8] w-full">
+                                    <button @click="submit" type="button" class="flex items-center justify-center bg-[#016b83] p-2 text-white font-bmediumrounded-md hover:bg-[#018aa8] w-full">
                                         <PaperAirplaneIcon class="size-5 mr-1"/>
                                         Submit
                                     </button>

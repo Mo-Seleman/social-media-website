@@ -4,7 +4,7 @@ import { HeartIcon } from '@heroicons/vue/24/outline'
 import TextareaInput from '../TextareaInput.vue'
 import IndigoButton from './indigoButton.vue'
 import EditDeleteDropdown from './EditDeleteDropdown.vue'
-import { usePage } from '@inertiajs/vue3'
+import { usePage, Link } from '@inertiajs/vue3'
 import { ref } from 'vue'
 import { Disclosure, DisclosurePanel, DisclosureButton } from '@headlessui/vue'
 import axiosClient from "@/axiosClient.js"
@@ -122,9 +122,9 @@ function deleteComment(comment) {
 
 <template>
       <div class="flex gap-2 mb-3">
-        <a href="javascript:void(0)">
+        <Link :href="route('profile', authUser.username)">
             <img :src="authUser.avatar_url" class="w-[52px] rounded-full">
-        </a>
+        </Link>
         <div class="flex flex-1">
             <TextareaInput v-model="newCommentText" rows="1" maxlength="400" class="w-full overflow-auto resize-none rounded-r-none max-h-[85px]" placeholder="Enter your comment here"/>
             <IndigoButton @click="createComment" class="w-[100px] rounded-l-none">Submit</IndigoButton>

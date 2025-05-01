@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUpdated, ref } from 'vue';
+import { onMounted, onUpdated, ref, watch } from 'vue';
 import PostItem from './PostItem.vue';
 import PostModal from './PostModal.vue';
 import { usePage } from '@inertiajs/vue3';
@@ -16,8 +16,8 @@ const previewAttachmentsPost = ref({})
 const loadMoreIntersect = ref(null)
 
 const allPosts = ref({
-    data: page.props.posts.data,
-    next: page.props.posts.links.next
+    data: [],
+    next: null
 })
 
 const props = defineProps({
@@ -58,6 +58,15 @@ function loadMore(){
         })
 }
 
+watch(() => page.props.posts, (newPosts) => {
+    console.log("New Posts", newPosts)
+    if (newPosts) {
+        allPosts.value = {
+            data: newPosts.data,
+            next: newPosts.links.next
+        }
+    }
+}, { immediate: true })
 
 onMounted(() => {
     const observer = new IntersectionObserver(
