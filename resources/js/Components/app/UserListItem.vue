@@ -1,6 +1,7 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
 import { ref } from 'vue'
+import { TrashIcon } from '@heroicons/vue/24/solid';
 
 defineProps({
     user: Object,
@@ -18,7 +19,7 @@ defineProps({
     }
 })
 
-defineEmits(['approve', 'reject', 'roleChange']);
+defineEmits(['approve', 'reject', 'roleChange', 'delete']);
 
 const selected = ref('');
 
@@ -40,11 +41,14 @@ const selected = ref('');
                     <button @click.prevent.stop="$emit('reject', user)"
                         class="px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 focus:bg-red-600 active:bg-red-600">Reject</button>
                 </div>
-                <div v-if="showRoleDropdown">
+                <div v-if="showRoleDropdown" class="flex justify-center gap-2">
                     <select @change="$emit('roleChange', user, $event.target.value)" :disabled="disableRoleDropdown" class="rounded-md bg-black/30 py-1.5 pr-8 pl-3 text-base text-white border-none sm:text-sm/6">
                         <option :selected="user.role === 'admin'">Admin</option>
                         <option :selected="user.role === 'user'">User</option>
                     </select>
+                    <button @click="$emit('delete', user)" :disabled="disableRoleDropdown" class="text-xs px-3 rounded text-white font-medium bg-red-600/90 hover:bg-red-600 disabled:bg-gray-500">
+                        <TrashIcon class="size-5"/>
+                    </button>
                 </div>
             </div>
         </div>
