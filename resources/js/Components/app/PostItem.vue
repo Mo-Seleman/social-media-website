@@ -47,7 +47,7 @@
     <div class="p-6 mb-4 bg-[#f2f8f3] rounded-md shadow">
         <div class="flex items-center justify-between">
            <PostUserHeader :post="post" />
-           <EditDeleteDropdown :user="post.user"  @edit="openEditModal" @delete="deletePost"/>
+           <EditDeleteDropdown :user="post.user" :post="post" @edit="openEditModal" @delete="deletePost"/>
         </div>
         <div>
             <Disclosure v-slot="{ open }">

@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Enums\ReactionEnum;
-use App\Http\Requests\StorePostRequest;
-use App\Http\Requests\UpdatePostRequest;
-use App\Http\Requests\UpdateCommentRequest;
-use App\Http\Resources\CommentResource;
-use App\Models\Comment;
 use App\Models\Post;
-use App\Models\PostAttachment;
+use App\Models\Comment;
 use App\Models\Reaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use App\Models\PostAttachment;
 use Illuminate\Validation\Rule;
+use App\Http\Enums\ReactionEnum;
+use App\Notifications\PostDeleted;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Notifications\CommentDeleted;
+use App\Http\Requests\StorePostRequest;
+use App\Http\Resources\CommentResource;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\UpdatePostRequest;
+use App\Http\Requests\UpdateCommentRequest;
 
 class PostController extends Controller
 {
@@ -36,7 +38,7 @@ class PostController extends Controller
             $files = $data['attachments'] ?? [];
 
             foreach ($files as $file) {
-                $path = $file->store('attachments/'.$post->id, 'public');
+                $path = $file->store('attachments/' . $post->id, 'public');
                 $allFilePaths[] = $path;
                 PostAttachment::create([
                     'post_id' => $post->id,
@@ -49,7 +51,6 @@ class PostController extends Controller
             }
 
             DB::commit();
-
         } catch (\Throwable $th) {
             foreach ($allFilePaths as $path) {
                 Storage::disk('public')->delete($path);
@@ -105,15 +106,15 @@ class PostController extends Controller
             }
 
             DB::commit();
-            } catch (\Throwable $th) {
-                foreach ($allFilePaths as $path) {
-                    Storage::disk('public')->delete($path);
-                }
-                DB::rollBack();
-                throw $th;
+        } catch (\Throwable $th) {
+            foreach ($allFilePaths as $path) {
+                Storage::disk('public')->delete($path);
             }
+            DB::rollBack();
+            throw $th;
+        }
 
-            return back();
+        return back();
     }
 
     /**
@@ -124,13 +125,17 @@ class PostController extends Controller
         //TODO
         $id = Auth::id();
 
-        if($post->user_id != $id){
-            return response("You Do Not Have Permission To Delete This Post", 403);
+        if ($post->group && $post->group->isAdmin($id) || $post->isOwner($id)) {
+            $post->delete();
+
+            if(!$post->isOwner($id)){
+                $post->user->notify(new PostDeleted($post->group));
+            }
+
+            return back();
         }
 
-        $post->delete();
-
-        return back();
+        return response("You Do Not Have Permission To Delete This Post", 403);
     }
 
     public function downloadAttachment(PostAttachment $attachment)
@@ -153,7 +158,7 @@ class PostController extends Controller
             ->where('object_type', Post::class)
             ->first();
 
-        if($reaction){
+        if ($reaction) {
             $hasReaction = false;
             $reaction->delete();
         } else {
@@ -193,13 +198,20 @@ class PostController extends Controller
 
     public function deleteComment(Comment $comment)
     {
-        if($comment->user_id != Auth::id()){
-            return response("You do not have permission to edit this post", 403);
-            // return response()->json(["You do not have permission to edit this post"], 403);
-            }  
+        $post = $comment->post;
+        $id = Auth::id();
 
-            $comment->delete();
-            return response("",204);
+        if($comment->isOwner($id) || $post->isOwner($id)) {
+                $comment->delete();
+
+                if(!$comment->isOwner($id)){
+                    $comment->user->notify(new CommentDeleted($comment, $post));
+                }
+
+                return response('', 204);
+        }
+
+           return response("You do not have permission to edit this post", 403);
     }
 
     public function updateComment(UpdateCommentRequest $request, Comment $comment)
@@ -226,7 +238,7 @@ class PostController extends Controller
             ->where('object_type', Comment::class)
             ->first();
 
-        if($reaction){
+        if ($reaction) {
             $hasReaction = false;
             $reaction->delete();
         } else {

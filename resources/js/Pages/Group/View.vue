@@ -237,8 +237,11 @@ function updateGroup(){
                         <Tab v-if="isJoinedToGroup" v-slot="{ selected }" as="tamplate">
                             <TabItem text="Users" :selected="selected" />
                         </Tab>
-                        <Tab v-if="isCurrentUserAdmin" v-slot="{ selected }" as="tamplate">
+                        <Tab v-if="isCurrentUserAdmin" v-slot="{ selected }" as="tamplate" class="relative">
                             <TabItem text="Requests" :selected="selected" />
+                            <div v-if="requests.length > 0" class="size-5 text-sm absolute -bottom-1 -right-2 flex items-center justify-center text-center rounded-xl text-white font-semibold bg-red-600">
+                                <p>{{ requests.length }}</p>
+                            </div>
                         </Tab>
                         <Tab v-slot="{ selected }" as="tamplate">
                             <TabItem text="Photos" :selected="selected" />
