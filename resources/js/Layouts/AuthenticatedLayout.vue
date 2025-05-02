@@ -6,6 +6,7 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link, usePage } from '@inertiajs/vue3';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const showingNavigationDropdown = ref(false);
 
@@ -116,7 +117,9 @@ const navLinks = ref([
                                     />
                                 </svg>
                             </button>
-                            <a v-else href="/"> Login Button </a>
+                            <PrimaryButton v-else href="/">
+                                Login
+                            </PrimaryButton>
                         </div>
                     </div>
                 </div>

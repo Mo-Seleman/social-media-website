@@ -127,7 +127,7 @@ function deleteComment(comment) {
         </Link>
         <div class="flex flex-1">
             <TextareaInput v-model="newCommentText" rows="1" maxlength="400" class="w-full overflow-auto resize-none rounded-r-none max-h-[85px]" placeholder="Enter your comment here"/>
-            <IndigoButton @click="createComment" class="w-[100px] rounded-l-none">Submit</IndigoButton>
+            <IndigoButton @click="createComment" class="w-[100px] rounded-l-none font-semibold">Submit</IndigoButton>
         </div>
     </div>
     <div class="overflow-scroll max-h-[440px]">
@@ -142,7 +142,7 @@ function deleteComment(comment) {
                         <small class="text-xs text-gray-500">{{ comment.updated_at }}</small>
                     </div>
                 </div>
-                <EditDeleteDropdown :user="comment.user" @edit="startCommentEdit(comment)" @delete="deleteComment(comment)"/>
+                <EditDeleteDropdown :user="comment.user" :post="post" :comment="comment" @edit="startCommentEdit(comment)" @delete="deleteComment(comment)"/>
             </div>
             <div v-if="editingComment && editingComment.id === comment.id" class="ml-12 max-w-[90%]">
                 <TextareaInput v-model="editingComment.comment" rows="1" maxlength="400" class="w-full overflow-auto resize-none rounded-r-none max-h-[85px] px-[0.94rem]" placeholder="Enter your comment here"/>
