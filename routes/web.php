@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-groups', [GroupController::class, 'index'])->name('my-groups');
     Route::get('/my-friends', [FriendController::class, 'index'])->name('my-friends');
 
+    Route::get('/post/{post}', [PostController::class, 'view'])->name('post.view');
     Route::post('/post', [PostController::class, 'store'])->name('post.store');
     Route::put('/post/{post}', [PostController::class, 'update'])->name('post.update');
     Route::delete('/post/{post}', [PostController::class, 'destroy'])->name('post.destroy');
