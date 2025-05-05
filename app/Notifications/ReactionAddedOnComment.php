@@ -40,7 +40,7 @@ class ReactionAddedOnComment extends Notification
         return (new MailMessage)
                     ->line($this->user->username . ' liked your comment.')
                     ->line('"'.$this->comment->comment.'"')
-                    ->action('View Post', url('/'))
+                    ->action('View Post', url(route('post.view', $this->post->id)))
                     ->line('Thank you for using our application!');
     }
 

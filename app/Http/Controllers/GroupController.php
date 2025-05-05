@@ -11,6 +11,7 @@ use App\Models\GroupUser;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Notifications\RemovedFromGroup;
 use App\Notifications\RoleChange;
 use App\Notifications\GroupRequest;
 use App\Http\Resources\UserResource;
@@ -28,7 +29,6 @@ use App\Http\Requests\UpdateGroupRequest;
 use App\Http\Resources\GroupUserResource;
 use App\Http\Resources\PostResource;
 use App\Notifications\ApprovedInvitation;
-use App\Notifications\RemovedFromGroup;
 use Illuminate\Support\Facades\Notification;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 

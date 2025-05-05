@@ -2,31 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Models\User;
+use Inertia\Inertia;
+use App\Notifications\PostCreated;
+use App\Notifications\CommentCreated;
+use App\Notifications\CommentDeleted;
+use App\Notifications\ReactionAddedOnComment;
 use App\Models\Comment;
 use App\Models\Reaction;
 use Illuminate\Http\Request;
 use App\Models\PostAttachment;
 use Illuminate\Validation\Rule;
 use App\Http\Enums\ReactionEnum;
-use App\Notifications\PostCreated;
 use App\Notifications\PostDeleted;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Notifications\CommentCreated;
-use App\Notifications\CommentDeleted;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Resources\CommentResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UpdatePostRequest;
 use App\Notifications\ReactionAddedOnPost;
 use App\Http\Requests\UpdateCommentRequest;
-use App\Notifications\ReactionAddedOnComment;
 use Illuminate\Support\Facades\Notification;
 
 class PostController extends Controller
 {
+
+    public function view(Post $post)
+    {
+        $post->loadCount('reactions');
+        $post->load([
+            'comments' => function ($query) {
+                $query->withCount('reactions');
+            },
+        ]);
+        
+        return Inertia::render('Post/View', [
+            'post' => new PostResource($post),
+        ]);
+    }
     /**
      * Store a newly created resource in storage.
      */
@@ -216,7 +232,7 @@ class PostController extends Controller
 
         $commenter = Auth::user();
 
-        $post->user->notify(new CommentCreated($comment, $commenter));
+        $post->user->notify(new CommentCreated($comment, $commenter, $post));
 
         return response()->json(new CommentResource($comment), 201);
     }

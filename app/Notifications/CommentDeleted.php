@@ -39,7 +39,7 @@ class CommentDeleted extends Notification
     {
         return (new MailMessage)
                     ->line('Your comment "' . Str::words($this->comment->comment, 5) . '" was removed on the post "' . Str::words($this->post->name, 5) . '" .')
-                    ->action('Open Post', url('/'))
+                    ->action('Open Post', url(route('post.view', $this->post->id)))
                     ->line('Thank you for using our application!');
     }
 
