@@ -1,12 +1,13 @@
 <script setup>
-import { ref, computed } from 'vue';
-import { XMarkIcon, CheckCircleIcon, PhotoIcon, CameraIcon } from '@heroicons/vue/24/solid';
+import { ref, computed, watch } from 'vue';
+import { XMarkIcon, CheckCircleIcon, PhotoIcon, CameraIcon, UserMinusIcon, UserPlusIcon } from '@heroicons/vue/24/solid';
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue';
 import { usePage, useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TabItem from './Partials/TabItem.vue';
 import Edit from './Edit.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import '/resources/css/utilities/slotAnimation.css';
 
 const authUser = usePage().props.auth.user; //Auth User Means Its There Account (So They Can Edit Nd What Not)
 
@@ -22,6 +23,12 @@ const props = defineProps({
     },
     success: {
         type: String,
+    },
+    isCurrentUserFollower: {
+        type: Boolean,
+    },
+    followerCount: {
+        type: Number,
     },
     user: {
         type: Object, //user Is The Person Thats Logged In But They Would Be Viewing Someone Elses Acc
@@ -96,6 +103,25 @@ function submitAvatarImage() {
     });
 }
 
+function toggleFollowUser(){
+    const form = useForm({
+        follow: !props.isCurrentUserFollower
+    })
+
+    form.post(route('user.follow', props.user.id), {
+        preserveScroll: true
+    })
+}
+
+const followerAnimation = ref(false);
+
+watch(() => props.followerCount, () => {
+    followerAnimation.value = true;
+    setTimeout(() => {
+        followerAnimation.value = false;
+    }, 500); // Matches the bounce animation duration
+});
+
 </script>
 
 <template>
@@ -161,7 +187,18 @@ function submitAvatarImage() {
                             </div>
                         </div>
                     <div class="flex justify-between items-center flex-1 p-3">
-                        <h2 class="font-bold text-lg">{{ user.name }}</h2>
+                        <div>
+                            <h2 class="font-bold text-lg">{{ user.name }}</h2>
+                            <span class="flex justify-center items-center gap-1 text-sm text-gray-500">                            
+                                <p :class="{ 'slot-wheel': followerAnimation }">{{ followerCount }}</p>
+                                <p>Followers</p>
+                            </span>                        
+                        </div>
+                        <div>
+                            <PrimaryButton @click="toggleFollowUser">
+                                {{ isCurrentUserFollower ? 'Unfollow ' : 'Follow ' }}
+                            </PrimaryButton>
+                        </div>
                     </div>
                 </div>
             </div>
