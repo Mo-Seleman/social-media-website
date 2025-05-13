@@ -63,7 +63,7 @@ watch(() => page.props.posts, (newPosts) => {
     if (newPosts) {
         allPosts.value = {
             data: newPosts.data,
-            next: newPosts.links.next
+            next: newPosts.links?.next
         }
     }
 }, { immediate: true })

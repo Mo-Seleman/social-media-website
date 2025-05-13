@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -37,8 +38,8 @@ class NewFollower extends Notification
     {
         return (new MailMessage)
                     ->subject('Followers')
-                    ->lineIf($this->follow, $this->authUser->username. ' has started following you.')
-                    ->lineIf(!$this->follow, $this->authUser->username. ' has unfollowed you.')
+                    ->lineIf($this->follow, Str::title($this->authUser->username) . ' has started following you.')
+                    ->lineIf(!$this->follow, Str::title($this->authUser->username) . ' has unfollowed you.')
                     ->action('View profile', url(route('profile', $this->authUser->username)))
                     ->line('Thank you for using our application!');
     }

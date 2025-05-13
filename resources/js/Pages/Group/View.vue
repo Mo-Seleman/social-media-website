@@ -41,7 +41,7 @@ const imagesForm = useForm({
 const aboutForm = useForm({
     name: props.group.name,
     auto_approval: !!props.group.auto_approval,
-    about: props.group.about,
+    about: props.group.about.replace(/(<br\s*\/?>\s*)+/gi, '\n'),
 })
 
 const coverImageSrc = ref('');
@@ -269,7 +269,10 @@ function deleteUser(user){
                         <TabPanel>
                             <template v-if="posts">
                                 <CreatePost :group="group" />
-                                <PostList :posts="posts.data" class="flex-1" />
+                                <PostList v-if="posts.data.length" :posts="posts.data" class="flex-1" />
+                                <div v-else class="py-8 text-center bg-white">
+                                    <p>There are no posts in this group</p>
+                                </div>
                             </template>
                             <div v-else class="py-8 text-center">
                                 <p> You do not have permission to view theses posts </p>
@@ -302,7 +305,7 @@ function deleteUser(user){
                                 <GroupForm :form="aboutForm" />
                                 <PrimaryButton @click="updateGroup"> Submit </PrimaryButton>
                             </template>
-                            <div v-else v-html="group.about">
+                            <div v-else class="ck-content-output" v-html="group.about">
                                 
                             </div>
                         </TabPanel>
