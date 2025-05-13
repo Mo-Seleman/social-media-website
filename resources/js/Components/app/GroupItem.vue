@@ -17,9 +17,7 @@ defineProps({
                         <h3 class="font-semibold uppercase text-md">{{ group.name }}</h3>
                         <small class="capitalize">{{ group.status === 'approved' ? (group.role === 'admin' ? group.role : '') : 'pending approval' }}</small>
                     </div>
-                    <p class="text-sm leading-4">
-                        {{ group.description }}
-                    </p>
+                    <p class="text-sm leading-4" v-html="group.description"></p>
                 </div>
             </div>
         </Link>

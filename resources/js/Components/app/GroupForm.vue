@@ -3,6 +3,7 @@
 import TextareaInput from '../TextareaInput.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import TextInput from '@/Components/TextInput.vue';
+import Editor from './Editor.vue';
 
 defineProps({
     form: Object
@@ -23,6 +24,6 @@ defineProps({
     </div>
     <div class="mb-3">
         <label class="capitalize">About group</label>
-        <TextareaInput v-model="form.about" class="w-full" />
+         <Editor v-model="form.about"/>
     </div>
 </template>
