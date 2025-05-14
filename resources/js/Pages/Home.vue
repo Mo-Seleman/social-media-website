@@ -9,6 +9,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 defineProps({
     posts: Object,
     groups: Array,
+    following: Array,
 });
 
 function handleImageError() {
@@ -32,7 +33,7 @@ function handleImageError() {
                     <PostList :posts="posts.data"/>
                 </div>
                 <div class="hidden tablet:block col-span-3">
-                    <FollowingList />
+                    <FollowingList :users="following"/>
                 </div>
             </div>
         </main>

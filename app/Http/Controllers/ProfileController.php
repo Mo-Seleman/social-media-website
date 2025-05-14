@@ -40,11 +40,9 @@ class ProfileController extends Controller
             return $posts;
         }
 
-        $followers = User::query()
-            ->select('users.*')
-            ->join('followers AS f', 'f.follower_id', 'users.id')
-            ->where('f.user_id', $user->id)
-            ->get();
+        $followers = $user->followers;
+
+        $following = $user->following;
 
         $following = User::query()
             ->select('users.*')
