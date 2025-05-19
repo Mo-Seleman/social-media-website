@@ -14,7 +14,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Resources\PostAttachmentResource;
 use App\Http\Resources\PostResource;
+use App\Models\PostAttachment;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 class ProfileController extends Controller
@@ -44,10 +46,16 @@ class ProfileController extends Controller
 
         $following = $user->following;
 
+        $photos = PostAttachment::query()
+            ->where('mime', 'like', 'image/%')
+            ->Where('created_by', $user->id)
+            ->get();
+
         $following = User::query()
             ->select('users.*')
             ->join('followers AS f', 'f.user_id', 'users.id')
             ->where('f.follower_id', $user->id)
+            ->latest()
             ->get();
 
         return Inertia::render('Profile/View', [
@@ -61,6 +69,7 @@ class ProfileController extends Controller
             'posts' => $posts,
             'followers' => UserResource::collection($followers),
             'following' => UserResource::collection($following),
+            'photos' => PostAttachmentResource::collection($photos),
         ]);
     }
 
