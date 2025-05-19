@@ -49,7 +49,7 @@
            <PostUserHeader :post="post" />
            <EditDeleteDropdown :user="post.user" :post="post" @edit="openEditModal" @delete="deletePost"/>
         </div>
-        <div>
+        <div class="px-6">
             <Disclosure v-slot="{ open }">
                 <div v-if="!open || post.body.length <= 200" v-html="post.body.substring(0, 150)" class="ck-content-output py-3"/>
                 <template v-if="post.body.length > 200">

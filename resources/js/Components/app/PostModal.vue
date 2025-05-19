@@ -1,11 +1,12 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle, } from '@headlessui/vue'
-import { XMarkIcon, PaperClipIcon, PaperAirplaneIcon, ArrowUturnLeftIcon } from '@heroicons/vue/24/solid'
+import { XMarkIcon, PaperClipIcon, PaperAirplaneIcon, ArrowUturnLeftIcon, SparklesIcon } from '@heroicons/vue/24/solid'
 import PostUserHeader from './PostUserHeader.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import Editor from './Editor.vue';
 import { isImage } from '@/helpers';
+import axiosClient from "@/axiosClient.js"
 
 const props = defineProps({
     post: {
@@ -26,6 +27,7 @@ const emit = defineEmits(['update:modelValue', 'hide'])
 const attachmentFiles = ref([])
 const attachmentErrors = ref([])
 const formErrors = ref({})
+const aiButtonLoading = ref(false)
 
 const form = useForm({
     body: '',
@@ -160,6 +162,27 @@ function processErrors(errors){
     }
 }
 
+function getAiFunction(){
+    if(!form.body){
+        return
+    }
+
+    aiButtonLoading.value = true;
+    axiosClient.post(route('post.aiContent'), {
+        prompt: form.body
+    })
+    .then(({data}) => {
+        form.body = data.content
+        aiButtonLoading.value = false;
+
+    })
+    .catch(err => {
+        console.log(err)
+        aiButtonLoading.value = false;
+
+    })
+}
+
 </script>
 
 <template>
@@ -186,7 +209,13 @@ function processErrors(errors){
                                         <p>{{ formErrors.group_id }}</p>
                                     </div>
 
-                                    <Editor v-model="form.body"/>
+                                    <div class="relative group">
+                                        <Editor v-model="form.body"/>
+                                        <button @click="getAiFunction" :disabled="aiButtonLoading" class="absolute right-1 top-12 opacity-0 group-hover:opacity-100 transition-all bg-[#19c37d] hover:bg-[#10a37f] text-white p-2 rounded-lg disabled:cursor-not-allowed">
+                                            <SparklesIcon v-if="!aiButtonLoading" class="size-5"/>
+                                            <svg v-else class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                        </button>
+                                    </div>
                                     <div v-if="showExtentionsText" class="border-l-4 border-amber-500 bg-amber-100 py-2 px-3 mt-3 text-gray-800">
                                         Files must be one of the following extentions: <br>
                                         <small>{{ attachmentExtentions.join(', ') }}</small>

@@ -26,6 +26,7 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Notifications\ReactionAddedOnPost;
 use App\Http\Requests\UpdateCommentRequest;
 use Illuminate\Support\Facades\Notification;
+use OpenAI\Laravel\Facades\OpenAI;
 
 class PostController extends Controller
 {
@@ -38,7 +39,7 @@ class PostController extends Controller
                 $query->withCount('reactions');
             },
         ]);
-        
+
         return Inertia::render('Post/View', [
             'post' => new PostResource($post),
         ]);
@@ -76,15 +77,13 @@ class PostController extends Controller
 
             $group = $post->group;
 
-            if($group){
+            if ($group) {
                 $users = $group->approvedUsers()->where('user_id', '!=', $user->id)->get();
                 Notification::send($users, new PostCreated($post, $user, $group));
             }
 
             $followers = $user->followers;
             Notification::send($followers, new PostCreated($post, $user, null));
-
-            
         } catch (\Throwable $th) {
             foreach ($allFilePaths as $path) {
                 Storage::disk('public')->delete($path);
@@ -162,7 +161,7 @@ class PostController extends Controller
         if ($post->group && $post->group->isAdmin($id) || $post->isOwner($id)) {
             $post->delete();
 
-            if(!$post->isOwner($id)){
+            if (!$post->isOwner($id)) {
                 $post->user->notify(new PostDeleted($post->group));
             }
 
@@ -204,7 +203,7 @@ class PostController extends Controller
                 'type' => $data['reaction']
             ]);
 
-            if(!$post->isOwner($userId)){
+            if (!$post->isOwner($userId)) {
                 $user = Auth::user();
                 $post->user->notify(new ReactionAddedOnPost($post, $user));
             }
@@ -246,17 +245,17 @@ class PostController extends Controller
         $post = $comment->post;
         $id = Auth::id();
 
-        if($comment->isOwner($id) || $post->isOwner($id)) {
-                $comment->delete();
+        if ($comment->isOwner($id) || $post->isOwner($id)) {
+            $comment->delete();
 
-                if(!$comment->isOwner($id)){
-                    $comment->user->notify(new CommentDeleted($comment, $post));
-                }
+            if (!$comment->isOwner($id)) {
+                $comment->user->notify(new CommentDeleted($comment, $post));
+            }
 
-                return response('', 204);
+            return response('', 204);
         }
 
-           return response("You do not have permission to edit this post", 403);
+        return response("You do not have permission to edit this post", 403);
     }
 
     public function updateComment(UpdateCommentRequest $request, Comment $comment)
@@ -295,7 +294,7 @@ class PostController extends Controller
                 'type' => $data['reaction']
             ]);
 
-            if(!$comment->isOwner($userId)){
+            if (!$comment->isOwner($userId)) {
                 $user = Auth::user();
                 $comment->user->notify(new ReactionAddedOnComment($comment->post, $comment, $user));
             }
@@ -307,5 +306,22 @@ class PostController extends Controller
             'num_of_reactions' => $reactions,
             'current_user_has_reaction' => $hasReaction
         ]);
+    }
+
+    public function aiPostContent(Request $request)
+    {
+        $prompt = $request->get('prompt');
+
+        $result = OpenAI::chat()->create([
+            'model' => 'gpt-4o-mini',
+            'messages' => [
+                [
+                    'role' => 'user',
+                    'content' => "Write a compelling social media post based on the following topic. Make the writing engaging and human-like.\n\nFormatting instructions:\n- Break the content into short paragraphs (2–4 sentences each).\n- Use line breaks between paragraphs.\n- If there are any hashtags, place them on a separate line at the bottom.\n\nTopic: " . $prompt
+                ],
+            ],
+        ]);
+
+        return response(['content' => $result->choices[0]->message->content]);
     }
 }
