@@ -10,10 +10,11 @@ use App\Models\Group;
 use App\Models\GroupUser;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\PostAttachment;
 use Illuminate\Validation\Rule;
-use App\Notifications\RemovedFromGroup;
 use App\Notifications\RoleChange;
 use App\Notifications\GroupRequest;
+use App\Http\Resources\PostResource;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Enums\GroupUserRoleEnum;
@@ -22,12 +23,13 @@ use App\Providers\AppServiceProvider;
 use App\Notifications\GroupInvitation;
 use App\Notifications\RequestApproved;
 use App\Http\Enums\GroupUserStatusEnum;
+use App\Notifications\RemovedFromGroup;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\InviteUsersRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Http\Resources\GroupUserResource;
-use App\Http\Resources\PostResource;
+use App\Http\Resources\PostAttachmentResource;
 use App\Notifications\ApprovedInvitation;
 use Illuminate\Support\Facades\Notification;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -94,12 +96,21 @@ class GroupController extends Controller
 
         $requests = $group->pendingUsers()->orderBy('name')->get();
 
+        $photos = PostAttachment::query()
+            ->select('post_attachments.*')
+            ->join('posts AS p', 'p.id', 'post_attachments.post_id')
+            ->where('p.group_id', $group->id)
+            ->where('mime', 'like', 'image/%')
+            ->latest()
+            ->get();
+
         return Inertia::render('Group/View', [
             'success' => session('success'),
             'group' => new GroupResource($group),
             'posts' => $posts,
             'users' => GroupUserResource::collection($users),
-            'requests' => UserResource::collection($requests)
+            'requests' => UserResource::collection($requests),
+            'photos' => PostAttachmentResource::collection($photos),
         ]);
 
     }

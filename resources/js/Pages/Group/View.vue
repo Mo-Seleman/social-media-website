@@ -12,6 +12,7 @@ import TextInput from '@/Components/TextInput.vue';
 import GroupForm from '@/Components/app/GroupForm.vue';
 import PostList from '@/Components/app/PostList.vue';
 import CreatePost from '@/Components/app/CreatePost.vue';
+import PhotoTimeline from '../Profile/PhotoTimeline.vue';
 
 const authUser = usePage().props.auth.user; //Auth User Means Its There Account (So They Can Edit Nd What Not)
 
@@ -26,6 +27,7 @@ const props = defineProps({
     group: {
         type: Object, //user Is The Person Thats Logged In But They Would Be Viewing Someone Elses Acc
     },
+    photos: Array,
     posts: Object,
     users: Array,
     requests: Array,
@@ -298,7 +300,7 @@ function deleteUser(user){
                             </div>
                         </TabPanel>
                         <TabPanel class="bg-white p-3 shadow">
-                            Photos Content
+                            <PhotoTimeline :photos="photos"/>
                         </TabPanel>
                         <TabPanel class="bg-white p-3 shadow">
                             <template v-if="isCurrentUserAdmin">

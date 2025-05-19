@@ -12,6 +12,8 @@ import PostList from '@/Components/app/PostList.vue'
 import CreatePost from '@/Components/app/CreatePost.vue'
 import UserListItem from '@/Components/app/UserListItem.vue'
 import TextInput from '@/Components/TextInput.vue'
+import PostAttachments from '@/Components/app/PostAttachments.vue'
+import PhotoTimeline from './PhotoTimeline.vue'
 
 const authUser = usePage().props.auth.user; //Auth User Means Its There Account (So They Can Edit Nd What Not)
 
@@ -37,6 +39,9 @@ const props = defineProps({
     user: {
         type: Object, //user Is The Person Thats Logged In But They Would Be Viewing Someone Elses Acc
     },
+    photos: {
+        type: Array,
+    },
     posts: Object,
     followers: Array,
     following: Array
@@ -53,6 +58,8 @@ const coverImageSrc = ref('')
 const avatarImageSrc = ref('')
 const searchFollowersKeyword = ref('')
 const searchFollowingKeyword = ref('')
+const showAttachmentsModal = ref(false)
+const previewAttachmentsPost = ref({})
 
 function onCoverChange(event) {
     imagesForm.cover = event.target.files[0]
@@ -129,7 +136,15 @@ watch(() => props.followerCount, () => {
     setTimeout(() => {
         followerAnimation.value = false;
     }, 500); // Matches the bounce animation duration
-});
+})
+
+function openAttachmentPreviewModal(post, index){
+    showAttachmentsModal.value = true
+    previewAttachmentsPost.value = {
+        post,
+        index
+    }
+};
 
 </script>
 
@@ -269,7 +284,7 @@ watch(() => props.followerCount, () => {
                             </div>
                         </TabPanel>
                         <TabPanel class="bg-white p-3 shadow">
-                            Photos Content
+                            <PhotoTimeline :photos="photos"/>
                         </TabPanel>
                         <TabPanel v-if="isMyProfile" key="posts">
                             <Edit :must-verify-email="mustVerifyEmail" :status="status" />
