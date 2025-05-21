@@ -9,6 +9,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SearchController;
 
 Route::get('/', [HomeController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/u/{user:username}', [ProfileController::class, 'index'])->name('profile');
@@ -16,6 +17,7 @@ Route::get('/g/{group:slug}', [GroupController::class, 'profile'])->name('group.
 Route::get('/group/approve-invitation/{token}', [GroupController::class, 'approveInvitation'])->name('group.approveInvitation');
 
 Route::middleware('auth')->group(function () {
+
     Route::prefix('/group')->group(function () {
         Route::post('/', [GroupController::class, 'store'])->name('group.create');
         Route::put('/{group:slug}', [GroupController::class, 'update'])->name('group.update');
@@ -38,6 +40,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/ai-post', [PostController::class, 'aiPostContent'])->name('post.aiContent');
         Route::delete('/comment/{comment}', [PostController::class, 'deleteComment'])->name('comment.delete');
     });
+
+    Route::get('/search/{search?}', [SearchController::class, 'search'])->name('search');
 
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile/update-images', [ProfileController::class, 'updateImage'])->name('profile.updateImages');
