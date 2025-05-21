@@ -5,10 +5,12 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
 
 const showingNavigationDropdown = ref(false);
+const keywords = ref(usePage().props.search);
 
 const authUser = usePage().props.auth.user;
 
@@ -17,6 +19,10 @@ const navLinks = ref([
             { name: 'My Groups', route: 'my-groups' },
             { name: 'My Friends', route: 'my-friends' },
         ]);
+
+function search(){
+    router.get(route('search', keywords.value))
+};
 </script>
 
 <template>
@@ -25,8 +31,7 @@ const navLinks = ref([
             <nav class="bg-white border-b border-gray-100">
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between h-16">
-                        <div class="flex">
+                    <div class="flex justify-between items-center h-16 mx-auto">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
                                 <Link :href="route('dashboard')">
@@ -36,14 +41,17 @@ const navLinks = ref([
                                 </Link>
                             </div>
 
+                            <div class="flex flex-1">
+                                <TextInput v-model="keywords" @keyup.enter="search" placeholder="Search" class="w-[80%] mx-auto text-center"></TextInput>
+                            </div>
+
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
                             </div>
-                        </div>
-
+                        
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
                             <!-- Settings Dropdown -->
                             <div class="ms-3 relative">

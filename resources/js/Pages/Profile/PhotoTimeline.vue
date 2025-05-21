@@ -1,5 +1,5 @@
 <script setup>
-import { ArrowDownTrayIcon, PaperClipIcon } from '@heroicons/vue/24/solid';
+import { ArrowDownTrayIcon, PaperClipIcon, PhotoIcon } from '@heroicons/vue/24/solid';
 import { isImage } from '@/helpers';
 import { ref } from 'vue';
 import AttachmentPreviewModal from '@/Components/app/AttachmentPreviewModal.vue';
@@ -34,6 +34,10 @@ function openPhotoGallery(index) {
                 <small>{{ attachment.name }}</small>
             </div>
         </div>
+    </div>
+    <div v-if="!photos.length" class="flex flex-col items-center justify-center py-8">
+        <PhotoIcon class="size-12 text-[#FF4F40]"/>
+        <p>No Photos Yet</p>
     </div>
     <AttachmentPreviewModal :attachments="photos || []" v-model:index="currentPhotoIndex" v-model="showModal"/>
 </template>
