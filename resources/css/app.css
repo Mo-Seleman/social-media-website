@@ -104,6 +104,9 @@
     color: blue;
 }
 
+.ck-content-output a.hashtags {
+  text-decoration: none;
+}
 /* * {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 } */

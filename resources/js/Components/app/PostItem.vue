@@ -7,12 +7,18 @@
     import EditDeleteDropdown from './EditDeleteDropdown.vue'
     import PostAttachments from './PostAttachments.vue'
     import CommentList from './CommentList.vue'
+    import { computed } from 'vue'
 
     const props = defineProps({
         post: Object
     });
 
     const emit = defineEmits(['editClick', 'attachmentClick'])
+
+    const postBody = computed(() => props.post.body.replace(/(#\w+)(?![^<]*<\/a>)/g, (match, group) => {
+        const encodedGroup = encodeURIComponent(group);
+        return `<a href="/search/${encodedGroup}" class="hashtags">${group}</a>`;
+    }))
 
     function openEditModal(){
         emit('editClick', props.post)
@@ -54,7 +60,7 @@
                 <div v-if="!open || post.body.length <= 200" v-html="post.body.substring(0, 150)" class="ck-content-output py-3"/>
                 <template v-if="post.body.length > 200">
                     <DisclosurePanel>
-                        <div v-html="post.body" class="ck-content-output py-3"/>
+                        <div v-html="postBody" class="ck-content-output py-3"/>
                     </DisclosurePanel>
                     <div class="flex justify-end">
                         <DisclosureButton class="pb-6">
