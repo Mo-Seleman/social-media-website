@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle, } from '@headlessui/vue'
 import { XMarkIcon, PaperClipIcon, PaperAirplaneIcon, ArrowUturnLeftIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/solid'
-import { isImage } from '@/helpers';
+import { isImage, isVideo } from '@/helpers';
 
 const props = defineProps({
     attachments: {
@@ -71,6 +71,9 @@ function next(){
                                     </div>
                                    <div class="flex items-center justify-center w-full h-full p-3">
                                         <img v-if="isImage(attachment)" :src="attachment.url" class="bg-cover bg-no-repeat max-w-full max-h-full">
+                                        <div v-else-if="isVideo(attachment)" class="flex items-center">
+                                            <video :src="attachment.url" class="h-screen" controls></video>
+                                        </div>
                                         <div v-else class="p-32 aspect-square bg-blue-100 flex flex-col items-center justify-center text-gray-100 hover:text-black active:text-black cursor-pointer rounded-lg">
                                             <PaperClipIcon size="4"/>
                                             <small>{{ attachment.name }}</small>
