@@ -3,13 +3,13 @@
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SearchController;
 
 Route::get('/', [HomeController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/u/{user:username}', [ProfileController::class, 'index'])->name('profile');
@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/{post}/reaction', [PostController::class, 'postReaction'])->name('post.reaction');
         Route::post('/{post}/comment', [PostController::class, 'createComment'])->name('post.comment.create');
         Route::post('/ai-post', [PostController::class, 'aiPostContent'])->name('post.aiContent');
+        Route::post('/fetch-url-preview', [PostController::class, 'fetchUrlPreview'])->name('post.fetchUrlPreview');
         Route::delete('/comment/{comment}', [PostController::class, 'deleteComment'])->name('comment.delete');
     });
 
