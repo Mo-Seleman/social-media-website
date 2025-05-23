@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Models\User;
+use DOMDocument;
 use Inertia\Inertia;
 use App\Notifications\PostCreated;
 use App\Notifications\CommentCreated;
@@ -323,5 +324,39 @@ class PostController extends Controller
         ]);
 
         return response(['content' => $result->choices[0]->message->content]);
+    }
+
+    public function fetchUrlPreview(Request $request)
+    {
+
+        $validated = $request->validate([
+            'url' => ['required', 'url'],
+        ]);
+
+        $url = $validated['url'];
+
+        $html = file_get_contents($url);
+
+        $dom = new DOMDocument();
+
+        libxml_use_internal_errors(true);
+
+        $dom->loadHTML($html);
+
+        libxml_use_internal_errors(false);
+
+        $ogTags = [];
+
+        $metaTags = $dom->getElementsByTagName('meta');
+
+        foreach ($metaTags as $tag) {
+            $property = $tag->getAttribute('property');
+            
+            if (str_starts_with($property, 'og:')) {
+                $ogTags[$property] = $tag->getAttribute('content');
+            }
+        }
+
+        return $ogTags;
     }
 }

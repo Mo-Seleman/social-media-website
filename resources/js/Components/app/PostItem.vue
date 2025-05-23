@@ -8,6 +8,7 @@
     import PostAttachments from './PostAttachments.vue'
     import CommentList from './CommentList.vue'
     import { computed } from 'vue'
+    import UrlPreview from '../common/UrlPreview.vue'
 
     const props = defineProps({
         post: Object
@@ -15,9 +16,9 @@
 
     const emit = defineEmits(['editClick', 'attachmentClick'])
 
-    const postBody = computed(() => props.post.body.replace(/(#\w+)(?![^<]*<\/a>)/g, (match, group) => {
-        const encodedGroup = encodeURIComponent(group);
-        return `<a href="/search/${encodedGroup}" class="hashtags">${group}</a>`;
+    const postBody = computed(() => props.post.body.replace(/(?:(\s+)|<p>)((#\w+)(?![^<]*<\/a>))/g, (match, group1, group2) => {
+        const encodedGroup = encodeURIComponent(group2);
+        return `${group1 || ''}<a href="/search/${encodedGroup}" class="hashtags">${group2}</a>`;
     }))
 
     function openEditModal(){
@@ -55,9 +56,12 @@
            <PostUserHeader :post="post" />
            <EditDeleteDropdown :user="post.user" :post="post" @edit="openEditModal" @delete="deletePost"/>
         </div>
-        <div class="px-6">
+        <div class="px-2">
             <Disclosure v-slot="{ open }">
                 <div v-if="!open || post.body.length <= 200" v-html="post.body.substring(0, 150)" class="ck-content-output py-3"/>
+                <div v-if="post.preview && post.preview.title">
+                    <UrlPreview :preview="post.preview" :url="previewUrl"/>
+                </div>
                 <template v-if="post.body.length > 200">
                     <DisclosurePanel>
                         <div v-html="postBody" class="ck-content-output py-3"/>
