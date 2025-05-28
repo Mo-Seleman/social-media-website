@@ -51,20 +51,25 @@ class Post extends Model
         return $this->morphMany(Reaction::class, 'object');
     }
 
-    public static function postsForTimeline($userId): Builder
+    public static function postsForTimeline($userId, $getLatest = true): Builder
     {
-        return Post::query()
+        $query = Post::query()
             ->withCount('reactions')
             ->with([
-                'comments' => function ($query)  {
+                'comments' => function ($query) {
                     $query
                         ->withCount('reactions');
                 },
                 'reactions' => function ($query) use ($userId) {
                     $query->where('user_id', $userId);
                 }
-            ])
-            ->latest();
+            ]);
+
+        if ($getLatest) {
+            $query->latest();
+        }
+
+        return $query;
     }
 
     public function isOwner($userId)
