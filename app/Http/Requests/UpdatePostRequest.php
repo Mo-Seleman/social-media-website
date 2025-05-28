@@ -22,7 +22,10 @@ class UpdatePostRequest extends StorePostRequest
 
     public function rules(): array
     {
-        return array_merge(parent::rules(), [
+        $rules = parent::rules();
+        unset($rules['group_id']);
+
+        return array_merge($rules, [
             'deleted_files_ids' => 'array',
             'deleted_files_ids.*' => 'numeric',
         ]);

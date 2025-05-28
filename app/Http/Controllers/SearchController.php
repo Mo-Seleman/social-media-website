@@ -5,36 +5,37 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\Group;
+use Illuminate\Http\Request;
 use App\Http\Resources\PostResource;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\GroupResource;
-use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
     public function search(Request $request, string $search = null)
     {
 
-        if (!$search){
+        if (!$search) {
             return redirect(route('dashboard'));
         }
 
         $users = User::query()
-        ->where("name", "like", "%{$search}%")
-        ->orWhere("username", "like", "%{$search}%")
-        ->latest()
-        ->get();
+            ->where("name", "like", "%{$search}%")
+            ->orWhere("username", "like", "%{$search}%")
+            ->latest()
+            ->get();
 
         $groups = Group::query()
-        ->where("name", "like", "%{$search}%")
-        ->orWhere("about", "like", "%{$search}%")
-        ->latest()
-        ->get();
+            ->where("name", "like", "%{$search}%")
+            ->orWhere("about", "like", "%{$search}%")
+            ->latest()
+            ->get();
 
-        $posts = Post::query()
-        ->where("body", "like", "%{$search}%")
-        ->latest()
-        ->paginate(20);
+        $posts = Post::postsForTimeline(Auth::id())
+            ->where("body", "like", "%{$search}%")
+            ->latest()
+            ->paginate(20);
 
         $posts = PostResource::collection($posts);
 
