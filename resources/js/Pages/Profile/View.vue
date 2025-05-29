@@ -248,8 +248,8 @@ function openAttachmentPreviewModal(post, index){
                         </Tab>
                     </TabList>
 
-                    <TabPanels class="mt-2">
-                        <TabPanel class="bg-white p-3 shadow">
+                    <TabPanels class="mt-2 bg-white dark:bg-gray-200">
+                        <TabPanel class="p-3 shadow">
                             <template v-if="posts">
                                 <CreatePost />
                                 <PostList :posts="posts.data" class="flex-1" />
@@ -258,7 +258,7 @@ function openAttachmentPreviewModal(post, index){
                                 <p> You do not have permission to view theses posts </p>
                             </div>
                         </TabPanel>
-                        <TabPanel class="bg-white p-3 shadow">
+                        <TabPanel class="p-3">
                             <div v-if="followers">
                                 <TextInput v-model="searchFollowersKeyword" placeholder="Search For a Follower"
                                     class="mt-2 w-full text-black" />
@@ -270,7 +270,7 @@ function openAttachmentPreviewModal(post, index){
                                 <p class="p-8">No followers at the moment</p>
                             </div>
                         </TabPanel>
-                        <TabPanel class="bg-white p-3 shadow">
+                        <TabPanel class="p-3 shadow">
                             <div v-if="following">
                                 <TextInput v-model="searchFollowingKeyword" placeholder="Search For a User"
                                     class="mt-2 w-full text-black" />
@@ -280,10 +280,9 @@ function openAttachmentPreviewModal(post, index){
                             </div>
                             <div v-else>
                                 <p class="p-8">You are not following anybody</p>
-                                <!-- <p>Here are some suggested accounts...</p> -->
                             </div>
                         </TabPanel>
-                        <TabPanel class="bg-white p-3 shadow">
+                        <TabPanel class="p-3 shadow">
                             <PhotoTimeline :photos="photos"/>
                         </TabPanel>
                         <TabPanel v-if="isMyProfile" key="posts">

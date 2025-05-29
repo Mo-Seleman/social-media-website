@@ -280,7 +280,7 @@ function deleteUser(user){
                                 <p> You do not have permission to view theses posts </p>
                             </div>
                         </TabPanel>
-                        <TabPanel v-if="isJoinedToGroup" class="bg-white p-3 shadow">
+                        <TabPanel v-if="isJoinedToGroup" class="bg-white dark:bg-gray-100 p-3 shadow">
                             <TextInput v-model="searchKeyword" placeholder="Search For a User"
                                 class="mt-2 w-full text-black" />
                             <div class="grid grid-cols-2 gap-3 py-3">
