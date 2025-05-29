@@ -12,9 +12,8 @@ const searchKeyword = ref('');
 </script>
 
 <template>
-    <pre class="text-white">{{ user }}</pre>
     <div class="col-span-3 text-white py-6 px-4">
-        <h2 class="text-2xl font-semibold hover:text-[#ff4f40]">My Friends</h2>
+        <h2 class="text-2xl font-semibold hover:text-[#ff4f40] dark:text-gray-700">My Friends</h2>
         <TextInput v-model="searchKeyword" placeholder="Search For Friends" class="mt-2 w-full text-black" />
         <div class="py-3">
             <div v-if="false">
