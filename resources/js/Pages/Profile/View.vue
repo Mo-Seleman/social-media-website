@@ -221,7 +221,7 @@ function openAttachmentPreviewModal(post, index){
                             </span>
                         </div>
                         <div>
-                            <PrimaryButton v-show="authUser.id !== user.id" @click="toggleFollowUser">
+                            <PrimaryButton v-show="!isMyProfile" @click="toggleFollowUser">
                                 {{ isCurrentUserFollower ? 'Unfollow ' : 'Follow ' }}
                             </PrimaryButton>
                         </div>
