@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('group_users', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('comments', function (Blueprint $table) {
+            $table->bigInteger('parent_id')->unsigned()->nullable();
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('group_users');
+        Schema::table('comments', function (Blueprint $table) {
+            $table->dropColumn('parent_id');
+        });
     }
 };

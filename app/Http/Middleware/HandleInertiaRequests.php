@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Requests\StorePostRequest;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -32,8 +34,9 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user() ? new UserResource($request->user()) : null,
             ],
+            'attachmentExtentions' => StorePostRequest::$extentions,
         ];
     }
 }
