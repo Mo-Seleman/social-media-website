@@ -181,7 +181,7 @@ function deleteUser(user){
             <div class="relative bg-white">
                 <div class="group">
                     <img :src="coverImageSrc || group.cover_url || '/img/default_cover.webp'"
-                        class="w-full h-[300px] object-cover" alt="Profile Cover Photo">
+                        class="w-full h-[150px] mobile:h-[300px] object-cover" alt="Profile Cover Photo">
                     <div v-if="isCurrentUserAdmin" class="absolute top-2 right-2">
                         <button v-if="!coverImageSrc"
                             class="bg-gray-50 hover:bg-gray-100 text-gray-800 py-1 px-2 text-sm flex items-center gap-x-1 opacity-0 transition-all group-hover:opacity-100 hover:scale-105">
@@ -212,9 +212,9 @@ function deleteUser(user){
                 </div>
                 <div class="flex">
                     <div
-                        class="relative group/thumbnail flex items-center justify-center mt-[-75px] ml-[48px] w-[150px] h-[150px]">
+                        class="relative group/thumbnail flex items-center justify-center mt-[-75px] mobile:ml-[48px] w-[150px] h-[150px]">
                         <img :src="thumbnailImageSrc || group.thumbnail_url || '/img/default_avatar.jpg'"
-                            class="w-full h-full object-cover rounded-full" alt="User Profile Picture">
+                            class="w-[120px] mobile:w-full mobile:h-full object-cover rounded-full" alt="User Profile Picture">
                         <button v-if="isCurrentUserAdmin && !thumbnailImageSrc"
                             class=" absolute left-0 top-0 right-0 bottom-0 bg-black/50 text-gray-200 rounded-full flex items-center justify-center transition-all opacity-0 group-hover/thumbnail:opacity-100">
                             <CameraIcon class="size-8" />
@@ -232,8 +232,8 @@ function deleteUser(user){
                             </button>
                         </div>
                     </div>
-                    <div class="flex justify-between items-center flex-1 p-3">
-                        <h2 class="font-medium text-lg">{{ group.name }}</h2>
+                    <div class="flex justify-between items-center flex-1 p-1 mobile:p-3">
+                        <h2 class="font-medium mobile:text-lg">{{ group.name }}</h2>
                         <PrimaryButton v-if="!authUser" :href="route('login')">Login to join this group</PrimaryButton>
                         <PrimaryButton @click="showInviteUserModal = true" v-if="isCurrentUserAdmin">Invite Users
                         </PrimaryButton>
@@ -246,7 +246,7 @@ function deleteUser(user){
             </div>
             <div class="w-full sm:px-0">
                 <TabGroup>
-                    <TabList class="flex bg-white border-t-gray-200 border-2">
+                    <TabList class="flex bg-white border-t-gray-200 border-2 text-sm mobile:text-md">
                         <Tab v-slot="{ selected }" as="tamplate">
                             <TabItem text="Posts" :selected="selected" />
                         </Tab>
@@ -283,7 +283,7 @@ function deleteUser(user){
                         <TabPanel v-if="isJoinedToGroup" class="bg-white dark:bg-gray-100 p-3 shadow">
                             <TextInput v-model="searchKeyword" placeholder="Search For a User"
                                 class="mt-2 w-full text-black" />
-                            <div class="grid grid-cols-2 gap-3 py-3">
+                            <div class="mobile:grid grid-cols-2 gap-3 py-3">
                                 <UserListItem v-for="user of users" :user="user" :key="user.id" :show-role-dropdown="isCurrentUserAdmin"
                                     :disable-role-dropdown="group.user_id === user.id"
                                     @role-change="onRoleChange"

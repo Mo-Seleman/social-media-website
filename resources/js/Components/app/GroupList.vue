@@ -21,7 +21,7 @@ function onGroupCreate(group){
      <div class="col-span-3 text-white py-6 px-4">
         <div class="flex justify-between">
             <h2 class="text-2xl font-semibold dark:text-gray-700">My Groups</h2>
-            <button @click="showNewGroupModel = true" class="text-sm bg-[#ff4f40] hover:scale-95 rounded-lg py-1 px-3 transition-all font-medium capitalize">new group</button>
+            <button @click="showNewGroupModel = true" class="text-xs desktop:text-sm bg-[#ff4f40] hover:scale-95 rounded-lg desktop:py-1 px-1 desktop:px-3 transition-all font-medium capitalize">new group</button>
         </div>
             <TextInput v-model="searchKeyword" placeholder="Search For Groups" class="mt-2 w-full text-black"/>
             <div class="py-3 h-[85vh]">

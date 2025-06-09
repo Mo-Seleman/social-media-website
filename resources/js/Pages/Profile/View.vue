@@ -161,7 +161,7 @@ function openAttachmentPreviewModal(post, index){
             <div class="relative bg-white">
                 <div class="group">
                     <img :src="coverImageSrc || user.cover_url || '/img/default_cover.webp'"
-                        class="w-full h-[300px] object-cover" alt="Profile Cover Photo">
+                        class="w-full h-[150px] mobile:h-[300px] object-cover" alt="Profile Cover Photo">
                     <div class="absolute top-2 right-2">
                         <button v-if="!coverImageSrc"
                             class="bg-gray-50 hover:bg-gray-100 text-gray-800 py-1 px-2 text-sm flex items-center gap-x-1 opacity-0 transition-all group-hover:opacity-100 hover:scale-105">
@@ -192,9 +192,9 @@ function openAttachmentPreviewModal(post, index){
                 </div>
                 <div class="flex">
                     <div
-                        class="relative group/avatar flex items-center justify-center mt-[-75px] ml-[48px] w-[150px] h-[150px]">
+                        class="relative group/avatar flex items-center justify-center mt-[-75px] mobile:ml-[48px] w-[150px] h-[150px]">
                         <img :src="avatarImageSrc || user.avatar_url || '/img/default_avatar.jpg'"
-                            class="w-full h-full object-cover rounded-full" alt="User Profile Picture">
+                            class="w-[120px] mobile:w-full h-[120px] mobile:h-full object-cover rounded-full" alt="User Profile Picture">
                         <button v-if="!avatarImageSrc"
                             class=" absolute left-0 top-0 right-0 bottom-0 bg-black/50 text-gray-200 rounded-full flex items-center justify-center transition-all opacity-0 group-hover/avatar:opacity-100">
                             <CameraIcon class="size-8" />
@@ -230,7 +230,7 @@ function openAttachmentPreviewModal(post, index){
             </div>
             <div class="w-full sm:px-0">
                 <TabGroup>
-                    <TabList class="flex bg-white border-t-gray-200 border-2">
+                    <TabList class="flex bg-white border-t-gray-200 border-2 text-sm mobile:text-md">
                         <Tab v-slot="{ selected }" as="tamplate">
                             <TabItem text="Posts" :selected="selected" />
                         </Tab>
