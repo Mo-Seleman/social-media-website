@@ -4,11 +4,17 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserResource;
 
 class FriendController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Inertia::render('MyFriends'); 
+        $user = $request->user();
+        $user = $request->user()->load('following');
+
+        return Inertia::render('MyFriends', [
+            'following' => UserResource::collection($user->following),
+        ]); 
     }
 }
