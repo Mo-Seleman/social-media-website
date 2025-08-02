@@ -212,6 +212,7 @@ class PostController extends Controller
 
         $reactions = Reaction::where('object_id', $post->id)->where('object_type', Post::class)->count();
 
+
         return response([
             'num_of_reactions' => $reactions,
             'current_user_has_reaction' => $hasReaction
@@ -220,6 +221,7 @@ class PostController extends Controller
 
     public function createComment(Request $request, Post $post)
     {
+
         $data = $request->validate([
             'comment' => ['required'],
             'parent_id' => ['nullable', 'exists:comments,id']
@@ -232,8 +234,9 @@ class PostController extends Controller
             'parent_id' => $data['parent_id'] ?: null,
         ]);
 
-        $post = $comment->post;
+        $comment->load('post');
 
+        $post = $comment->post;
         $commenter = Auth::user();
 
         $post->user->notify(new CommentCreated($comment, $commenter, $post));
