@@ -27,7 +27,7 @@ const selected = ref('');
 
 <template>
     <div class="transition-transform duration-300 transform">
-        <div class="flex items-center gap-3 bg-[#016b83] dark:bg-white p-3 rounded-md">
+        <div class="flex items-center gap-3 bg-[#1A1A1A] dark:bg-white p-3 rounded-xl">
             <Link :href="route('profile', user.username)">
                 <img :src="user.avatar_url" class="w-[38px] rounded-full" />
             </Link>

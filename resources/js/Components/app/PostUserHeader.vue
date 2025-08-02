@@ -24,8 +24,7 @@ defineProps({
                 </Link> 
                 <template v-if="post.group">
                     <ChevronRightIcon class="w-4" />
-                    <Link :href="route('group.profile', post.group.slug)"
-                        class="hover:text-[#ff4f40] hover:animate-bounce">{{ post.group.name }}</Link>
+                    <Link :href="route('group.profile', post.group.slug)" class="hover:underline">{{ post.group.name }}</Link>
                 </template>
             </div>
             <small v-if="showTime">{{ post.updated_at }}</small>
