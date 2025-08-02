@@ -21,7 +21,8 @@ class HomeController extends Controller
         $user = $request->user();
 
         $posts = Post::postsForTimeline($userId)
-            ->select('posts.*')
+            ->withCount('reactions')
+            // ->select('posts.*')
             ->leftJoin('followers AS f', function ($join) use ($userId) {
                 $join->on('posts.user_id', 'f.user_id')
                     ->where('f.follower_id', $userId);
