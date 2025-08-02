@@ -23,9 +23,8 @@ defineProps({
                     <h4 class="hover:underline text-sm mobile:text-md">{{ post.user.name }}</h4>
                 </Link> 
                 <template v-if="post.group">
-                    <ChevronRightIcon class="w-3 mobile:w-4" />
-                    <Link :href="route('group.profile', post.group.slug)"
-                        class="hover:text-[#ff4f40] hover:animate-bounce text-sm mobile:text-md">{{ post.group.name }}</Link>
+                    <ChevronRightIcon class="w-4" />
+                    <Link :href="route('group.profile', post.group.slug)" class="hover:underline">{{ post.group.name }}</Link>
                 </template>
             </div>
             <small v-if="showTime" class="text-xs mobile:text-sm">{{ post.updated_at }}</small>

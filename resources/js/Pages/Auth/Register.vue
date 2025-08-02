@@ -24,14 +24,18 @@ const submit = () => {
     <GuestLayout>
         <Head title="Register" />
 
+        <div>
+            <p class="text-white uppercase text-[3.1rem] font-black text-center tracking-wide font-mono mb-6">Register Now</p>
+        </div>
+
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="name" value="Name" class="text-white"/>
 
                 <TextInput
                     id="name"
                     type="text"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full bg-inherit text-white"
                     v-model="form.name"
                     required
                     autofocus
@@ -42,12 +46,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" value="Email" class="text-white"/>
 
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full bg-inherit text-white"
                     v-model="form.email"
                     required
                     autocomplete="username"
@@ -57,12 +61,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" value="Password" class="text-white"/>
 
                 <TextInput
                     id="password"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full bg-inherit text-white"
                     v-model="form.password"
                     required
                     autocomplete="new-password"
@@ -72,12 +76,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
+                <InputLabel for="password_confirmation" value="Confirm Password" class="text-white"/>
 
                 <TextInput
                     id="password_confirmation"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full bg-inherit text-white"
                     v-model="form.password_confirmation"
                     required
                     autocomplete="new-password"

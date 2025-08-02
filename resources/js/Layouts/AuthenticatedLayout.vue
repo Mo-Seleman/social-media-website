@@ -44,7 +44,7 @@ function toggleDarkMode(){
 <template>
     <div>
         <div class="min-h-screen ">
-            <nav class="bg-white dark:bg-gray-300 border-b border-gray-100">
+            <nav class="bg-[#282828] dark:bg-gray-300 py-2">
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between items-center h-16 mx-auto">
@@ -52,16 +52,16 @@ function toggleDarkMode(){
                             <div class="shrink-0 flex items-center">
                                 <Link :href="route('dashboard')">
                                     <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800"
+                                        class="block h-9 w-auto fill-current text-white"
                                     />
                                 </Link>
                             </div>
 
                             <div class="flex items-center gap-3 flex-1">
-                                <TextInput v-model="keywords" @keyup.enter="search" placeholder="Search" class="w-[80%] mx-auto text-center"></TextInput>
-                                <button @click="toggleDarkMode" class="dark:text-white">
+                                <TextInput v-model="keywords" @keyup.enter="search" placeholder="Search" class="w-[80%] mx-auto text-center placeholder:text-white text-white py-3 font-bold bg-[#1A1A1A] border-none outline-none focus:outline-none select:outline-none"></TextInput>
+                                <!-- <button @click="toggleDarkMode" class="dark:text-white">
                                     <MoonIcon class="size-5"/>
-                                </button>
+                                </button> -->
                             </div>
 
                             <!-- Navigation Links -->
@@ -163,18 +163,18 @@ function toggleDarkMode(){
                     </div>
 
                     <!-- Responsive Settings Options -->
-                    <template v-if="authUser">
+                    <template v-if="authUser" class="">
                         <div class="pt-4 pb-1 border-t border-gray-200">
                         <div class="px-4">
-                            <div class="font-medium text-base text-gray-800">
+                            <div class="font-medium text-base text-white">
                                 {{ authUser.name }}
                             </div>
-                            <div class="font-medium text-sm text-gray-500">{{ authUser.email }}</div>
+                            <div class="font-medium text-sm text-white">{{ authUser.email }}</div>
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile', { username: authUser.username })"> Profile </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('logout')" method="post" as="button">
+                            <ResponsiveNavLink :href="route('profile', { username: authUser.username })" class="text-white"> Profile </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('logout')" method="post" as="button" class="text-white">
                                 Log Out
                             </ResponsiveNavLink>
                         </div>

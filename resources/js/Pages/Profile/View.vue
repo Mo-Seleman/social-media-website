@@ -150,7 +150,7 @@ function openAttachmentPreviewModal(post, index){
 
 <template>
     <AuthenticatedLayout>
-        <div class="max-w-[768px] mx-auto bg-gray-200 h-[100vh] overflow-auto">
+        <div class="max-w-[768px] mx-auto bg-[#282828] text-white h-[100vh] overflow-auto">
             <div v-show="showNotification && success"
                 class="my-2 py-2 px-3 font-medium text-md bg-emerald-500 text-white">
                 <p>{{ success }}</p>
@@ -158,7 +158,7 @@ function openAttachmentPreviewModal(post, index){
             <div v-if="errors.cover" class="my-2 py-2 px-3 font-medium text-md bg-red-500 text-white">
                 <p>{{ errors.cover }}</p>
             </div>
-            <div class="relative bg-white">
+            <div class="relative bg-[#282828]">
                 <div class="group">
                     <img :src="coverImageSrc || user.cover_url || '/img/default_cover.webp'"
                         class="w-full h-[150px] mobile:h-[300px] object-cover" alt="Profile Cover Photo">
@@ -215,22 +215,22 @@ function openAttachmentPreviewModal(post, index){
                     <div class="flex justify-between items-center flex-1 p-3">
                         <div>
                             <h2 class="font-bold text-lg">{{ user.name }}</h2>
-                            <span class="flex items-center gap-1 text-sm text-gray-500">
+                            <span class="flex items-center gap-1 text-sm text-[#8E8E8E]">
                                 <p :class="{ 'slot-wheel': followerAnimation }">{{ followerCount }}</p>
                                 <p>Followers</p>
                             </span>
                         </div>
                         <div>
-                            <PrimaryButton v-show="!isMyProfile" @click="toggleFollowUser">
+                            <button v-show="!isMyProfile" @click="toggleFollowUser" class="bg-[#FFFD02] text-black font-bold rounded-xl px-4 py-2">
                                 {{ isCurrentUserFollower ? 'Unfollow ' : 'Follow ' }}
-                            </PrimaryButton>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="w-full sm:px-0">
                 <TabGroup>
-                    <TabList class="flex bg-white border-t-gray-200 border-2 text-sm mobile:text-md">
+                    <TabList class="flex text-white">
                         <Tab v-slot="{ selected }" as="tamplate">
                             <TabItem text="Posts" :selected="selected" />
                         </Tab>
@@ -248,7 +248,7 @@ function openAttachmentPreviewModal(post, index){
                         </Tab>
                     </TabList>
 
-                    <TabPanels class="mt-2 bg-white dark:bg-gray-200">
+                    <TabPanels class="mt-2 bg-[#8E8E8E] dark:bg-gray-200">
                         <TabPanel class="p-3 shadow">
                             <template v-if="posts">
                                 <CreatePost />

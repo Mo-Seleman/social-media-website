@@ -29,7 +29,7 @@ function showCreatePostModal(){
 
 <template>
     <div class="py-4">
-        <button @click="showCreatePostModal" class="flex items-center justify-center mb-1 py-4 w-full border-1 border-gray-300 text-white text-md mobile:text-lg rounded-md shadow-sm bg-[#016b83] hover:bg-[#018aa8] dark:bg-gray-300 dark:text-gray-700 dark: font-semibold">Click here to create a new post <PencilSquareIcon class="size-5 mx-2"/> </button>
+        <button @click="showCreatePostModal" class="flex items-center justify-center mb-1 py-4 w-full border-1 border-[#FFFD02] border-2 text-white text-lg rounded-md shadow-sm bg-[#282828] dark:bg-gray-300 dark:text-gray-700 font-bold">Create Post <PencilSquareIcon class="w-5 h-5 mx-2"/> </button>
         <PostModal :post="newPost" :group="group" v-model="showModal"></PostModal>
     </div>
 </template>
