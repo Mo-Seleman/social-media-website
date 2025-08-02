@@ -33,7 +33,7 @@ const selected = ref('');
             </Link>
             <div class="flex justify-between items-center flex-1">
                 <Link :href="route('profile', user.username)">
-                    <h3 class="semibold text-lg text-white dark:text-gray-700 hover:underline">{{ user.name }}</h3>
+                    <h3 class="semibold mobile:text-lg text-white dark:text-gray-700 hover:underline">{{ user.name }}</h3>
                 </Link>
                 <div v-if="forApprove" class="flex gap-1">
                     <button @click.prevent.stop="$emit('approve', user)"

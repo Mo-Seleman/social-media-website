@@ -24,15 +24,15 @@ function handleImageError() {
     <Head title="Social Media Website" />
        <AuthenticatedLayout>
         <main>
-            <div class="grid tablet:grid-cols-12 gap-3 mx-5">
-                <div class="hidden tablet:block col-span-3">
+            <div class="grid laptop:grid-cols-12 gap-3 mx-5 max-w-7xl laptop:mx-auto">
+                <div class="hidden laptop:block col-span-3">
                     <GroupList :groups="groups"/>
                 </div>
                 <div class="col-span-6 h-lvh overflow-y-scroll">
                     <CreatePost />
                     <PostList :posts="posts.data"/>
                 </div>
-                <div class="hidden tablet:block col-span-3">
+                <div class="hidden laptop:block col-span-3">
                     <FollowingList :users="following"/>
                 </div>
             </div>

@@ -104,9 +104,9 @@
             <EditDeleteDropdown :user="post.user" :post="post" @edit="openEditModal" @delete="deletePost" @pin="pinPostToggle"/>
            </div>
         </div>
-        <div class="px-2">
+        <div class="mobile:px-2">
             <Disclosure v-slot="{ open }">
-                <div v-if="!open || post.body.length <= 200" v-html="post.body.substring(0, 150)" class="ck-content-output py-3"/>
+                <div v-if="!open || post.body.length <= 200" v-html="post.body.substring(0, 150)" class="ck-content-output py-1 mobile:py-3"/>
                 <div v-if="post.preview && post.preview.title">
                     <UrlPreview :preview="post.preview" :url="previewUrl"/>
                 </div>
