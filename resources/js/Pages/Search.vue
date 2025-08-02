@@ -17,13 +17,15 @@ const props = defineProps({
 <template>
     <AuthenticatedLayout>
         <div class="p-4 flex flex-col gap-3">
-            <div v-if="!search.startsWith('#')" class="grid grid-cols-2 gap-3">
-            <div class="border-gray-600 border-2 p-3 rounded">
+            <div v-if="!search.startsWith('#')" class="grid tablet:grid-cols-2 gap-3">
+            <div class="border-gray-600 bg-[#8E8E8E] border-2 p-3 rounded">
                 <h2 class="text-lg font-bold text-white">Users</h2>
-                <UserListItem  v-if="users.length" v-for="user of users" :user="user" />
+                <div v-if="users.length" class="space-y-3">
+                    <UserListItem v-for="user of users" :user="user" />
+                </div>
                 <div v-else class="py-8 text-white">No Users Found</div>
             </div>
-            <div class="text-white border-gray-600 border-2 p-3 rounded">
+            <div class="text-white border-gray-600 bg-[#8E8E8E] border-2 p-3 rounded">
                 <h2 class="text-lg font-bold">Groups</h2>
                 <GroupItem v-if="groups.length" v-for="group of groups" :group="group" />
                 <div v-else class="py-8 text-white">No Groups Found</div>

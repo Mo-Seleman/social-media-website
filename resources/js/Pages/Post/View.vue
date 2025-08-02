@@ -41,7 +41,7 @@ function onHideModal(){
 
 <template>
     <AuthenticatedLayout>
-        <div class="my-16 mx-auto max-w-[60%]">
+        <div class="my-16 mx-auto max-w-[60%] scroll-smooth">
             <PostItem :post="post" @editClick="openEditModal" @attachmentClick="openAttachmentPreviewModal"/>
         </div>
         <PostModal :post="editPost" v-model="showEditModal" @hide="onHideModal"></PostModal>

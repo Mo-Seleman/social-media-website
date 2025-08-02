@@ -1,5 +1,5 @@
 <script setup>
-import { ChatBubbleLeftEllipsisIcon,} from '@heroicons/vue/24/solid'
+import { ChatBubbleLeftEllipsisIcon, PaperAirplaneIcon, PaperClipIcon} from '@heroicons/vue/24/solid'
 import { HeartIcon } from '@heroicons/vue/24/outline'
 import TextareaInput from '../TextareaInput.vue'
 import IndigoButton from './indigoButton.vue'
@@ -18,6 +18,7 @@ const showPostMenu = ref(false);
 const props = defineProps({
     post: Object,
     data: Object,
+    open: Boolean,
     parentComment: {
         type: [Object, null],
         default: null
@@ -121,57 +122,59 @@ function deleteComment(comment) {
 </script>
 
 <template>
-      <div class="flex gap-2 mb-3">
+      <div class="flex gap-2">
         <Link :href="route('profile', authUser.username)">
-            <img :src="authUser.avatar_url" class="w-[52px] rounded-full">
+            <img :src="authUser.avatar_url" class="w-[52px] rounded-sm">
         </Link>
-        <div class="flex flex-1">
-            <TextareaInput v-model="newCommentText" rows="1" maxlength="400" class="w-full overflow-auto resize-none rounded-r-none max-h-[85px]" placeholder="Enter your comment here"/>
-            <IndigoButton @click="createComment" class="w-[100px] rounded-l-none font-semibold">Submit</IndigoButton>
+        <div class="flex flex-1 items-center justify-center px-3 bg-[#1A1A1A] placeholder:text-[#8E8E8E] rounded-xl">
+            <TextareaInput v-model="newCommentText" rows="1" maxlength="400" class="bg-inherit outline-none border-none w-full overflow-auto resize-none max-h-[85px]" placeholder="Enter your comment here"/>
+            <PaperAirplaneIcon @click="createComment" class="size-5 transition-all hover:scale-125 cursor-pointer"></PaperAirplaneIcon>
         </div>
     </div>
-    <div class="overflow-scroll max-h-[440px]">
-        <div v-for="comment of data.comments" :key="comment.id" class="mb-6">
-            <div class="flex justify-between gap-2">
-                <div class="flex gap-2">
-                    <a href="javascript:void(0)">
-                        <img :src="comment.user.avatar_url" class="w-[52px] rounded-full">
-                    </a>
-                    <div>
-                        <h4 class="hover:underline">{{ comment.user.name }}</h4>
-                        <small class="text-xs text-gray-500">{{ comment.updated_at }}</small>
-                    </div>
-                </div>
-                <EditDeleteDropdown :user="comment.user" :post="post" :comment="comment" @edit="startCommentEdit(comment)" @delete="deleteComment(comment)"/>
-            </div>
-            <div v-if="editingComment && editingComment.id === comment.id" class="ml-12 max-w-[90%]">
-                <TextareaInput v-model="editingComment.comment" rows="1" maxlength="400" class="w-full overflow-auto resize-none rounded-r-none max-h-[85px] px-[0.94rem]" placeholder="Enter your comment here"/>
-                <div class="flex gap-2 justify-end ">
-                    <button @click="editingComment = {}" class="text-gray-800">cancel</button>
-                    <IndigoButton @click="updateComment" class="w-[100px] rounded-l-none">update</IndigoButton>
-                </div>
-            </div>
-            <div v-else class="pl-16">
-                <Disclosure>
-                    <div class="flex items-center gap-5">
-                        <div class="text-md flex flex-1 items-center [line-break:auto] min-h-[41px] max-w-[85%] pb-2" v-html="comment.comment"></div>
-                        <div class="flex flex-col items-center">
-                            <button @click="sendCommentReaction(comment)" class="hover:scale-[0.95] transition-all">                                
-                                <HeartIcon class="size-5 stroke-[2.5]" :class="[comment.current_user_has_reaction ? 'stroke-red-500 fill-red-500' : 'stroke-gray-500']"/>
-                            </button>
-                            <span v-if="comment.num_of_reactions > 0" class="text-sm">{{ comment.num_of_reactions }}</span>
+    <Transition>
+        <div v-if="open" :class="['overflow-scroll max-h-[440px] mt-3', data.comments.length > 0 ? 'bg-[#1A1A1A] p-3 rounded-xl' : '']">
+            <div v-for="comment of data.comments" :key="comment.id" class="mb-6">
+                <div class="flex justify-between gap-2 ">
+                    <div class="flex gap-2">
+                        <a href="javascript:void(0)">
+                            <img :src="comment.user.avatar_url" class="w-[52px] rounded-full">
+                        </a>
+                        <div>
+                            <h4 class="hover:underline">{{ comment.user.name }}</h4>
+                            <small class="text-xs text-gray-500">{{ comment.updated_at }}</small>
                         </div>
                     </div>
-                    <DisclosureButton class="flex items-center gap-1 text-xs bg-[#ff4f40]/80 px-2 py-1 rounded-md text-white hover:scale-[0.95] transition-all font-bold tracking-wide w-fit">
-                        <ChatBubbleLeftEllipsisIcon class="size-4"/>
-                        <span class="mr-1">{{ comment.num_of_comments }}</span>
-                        Comments
-                    </DisclosureButton>
-                    <DisclosurePanel class="mt-3">
-                        <CommentList :post="post" :data="{comments: comment.comments}" :parentComment="comment" @commentCreate="onCommentCreate" @commentDelete="onCommentDelete"/>
-                    </DisclosurePanel>
-                </Disclosure>
+                    <EditDeleteDropdown :user="comment.user" :post="post" :comment="comment" @edit="startCommentEdit(comment)" @delete="deleteComment(comment)"/>
+                </div>
+                <div v-if="editingComment && editingComment.id === comment.id" class="ml-12 max-w-[90%] text-sm mobile:text-md">
+                    <TextareaInput v-model="editingComment.comment" rows="1" maxlength="400" class="w-full overflow-auto resize-none rounded-r-none max-h-[85px] px-[0.94rem]" placeholder="Enter your comment here"/>
+                    <div class="flex gap-2 justify-end ">
+                        <button @click="editingComment = {}" class="text-gray-800">cancel</button>
+                        <IndigoButton @click="updateComment" class="w-[100px] rounded-l-none">update</IndigoButton>
+                    </div>
+                </div>
+                <div v-else class="pl-16 text-sm mobile:text-md">
+                    <Disclosure>
+                        <div class="flex items-center gap-5">
+                            <div class="text-md flex flex-1 items-center [line-break:auto] min-h-[41px] max-w-[85%] pb-2" v-html="comment.comment"></div>
+                            <div class="flex flex-col items-center">
+                                <button @click="sendCommentReaction(comment)" class="hover:scale-[0.95] transition-all">                                
+                                    <HeartIcon class="size-5 stroke-[2.5]" :class="[comment.current_user_has_reaction ? 'stroke-red-500 fill-red-500' : 'stroke-gray-500']"/>
+                                </button>
+                                <span v-if="comment.num_of_reactions > 0" class="text-sm">{{ comment.num_of_reactions }}</span>
+                            </div>
+                        </div>
+                        <DisclosureButton class="flex items-center gap-1 text-xs bg-[#ff4f40]/80 px-2 py-1 rounded-md text-white hover:scale-[0.95] transition-all font-bold tracking-wide w-fit">
+                            <ChatBubbleLeftEllipsisIcon class="size-4"/>
+                            <span class="mr-1">{{ comment.num_of_comments }}</span>
+                            Comments
+                        </DisclosureButton>
+                        <DisclosurePanel class="mt-3">
+                            <CommentList :post="post" :data="{comments: comment.comments}" :parentComment="comment" @commentCreate="onCommentCreate" @commentDelete="onCommentDelete"/>
+                        </DisclosurePanel>
+                    </Disclosure>
+                </div>
             </div>
         </div>
-    </div>
+    </Transition>
 </template>
