@@ -24,7 +24,7 @@ function handleImageError() {
     <Head title="Social Media Website" />
        <AuthenticatedLayout>
         <main>
-            <div class="grid laptop:grid-cols-12 gap-3 mx-5 max-w-7xl laptop:mx-auto">
+            <div class="grid laptop:grid-cols-12 gap-3 mx-5">
                 <div class="hidden laptop:block col-span-3">
                     <GroupList :groups="groups"/>
                 </div>

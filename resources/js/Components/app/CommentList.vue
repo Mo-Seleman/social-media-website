@@ -146,14 +146,14 @@ function deleteComment(comment) {
                     </div>
                     <EditDeleteDropdown :user="comment.user" :post="post" :comment="comment" @edit="startCommentEdit(comment)" @delete="deleteComment(comment)"/>
                 </div>
-                <div v-if="editingComment && editingComment.id === comment.id" class="ml-12 max-w-[90%]">
+                <div v-if="editingComment && editingComment.id === comment.id" class="ml-12 max-w-[90%] text-sm mobile:text-md">
                     <TextareaInput v-model="editingComment.comment" rows="1" maxlength="400" class="w-full overflow-auto resize-none rounded-r-none max-h-[85px] px-[0.94rem]" placeholder="Enter your comment here"/>
                     <div class="flex gap-2 justify-end ">
                         <button @click="editingComment = {}" class="text-gray-800">cancel</button>
                         <IndigoButton @click="updateComment" class="w-[100px] rounded-l-none">update</IndigoButton>
                     </div>
                 </div>
-                <div v-else class="pl-16">
+                <div v-else class="pl-16 text-sm mobile:text-md">
                     <Disclosure>
                         <div class="flex items-center gap-5">
                             <div class="text-md flex flex-1 items-center [line-break:auto] min-h-[41px] max-w-[85%] pb-2" v-html="comment.comment"></div>
