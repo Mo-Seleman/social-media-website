@@ -11,7 +11,7 @@ defineProps({
     <div class="pb-3 transition-transform duration-300 transform hover:scale-[0.975] cursor-pointer">
         <Link :href="route('group.profile', group.slug)">
             <div class="flex items-start gap-3 bg-[#1A1A1A] dark:bg-white dark:text-gray-700 p-3 rounded-xl">
-                <img :src="group.thumbnail_url" alt="" class="w-[48px] rounded-full" />
+                <img :src="group.thumbnail_url" alt="" class="size-[45px] rounded-full object-cover" />
                 <div class="flex-1">
                     <div class="flex justify-between">
                         <h3 class="uppercase text-sm">{{ group.name }}</h3>

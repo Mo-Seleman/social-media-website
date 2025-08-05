@@ -24,7 +24,7 @@ const filteredUsers = computed(() => {
         <TextInput v-model="searchKeyword" placeholder="Search For Friends" class="outline-none border-none mt-2 w-full text-black bg-[#1A1A1A] placeholder:text-[#8E8E8E]" />
         <div class="py-3">
             <div v-if="false">
-                <p class="flex text-center justify-center bg-[#016b83] p-3 rounded-md font-semibold">Add Some Friends
+                <p class="flex text-center justify-center bg-[#FFFD02] text-[#282828] p-3 rounded-md font-semibold">Add Some Friends
                 </p>
             </div>
             <div v-else class="space-y-3">

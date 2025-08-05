@@ -38,7 +38,7 @@
         </div>
 
         <div>
-            <p class="text-white uppercase text-[3.1rem] font-black text-center tracking-wide font-mono mb-6">Welcome Back</p>
+            <p class="text-white uppercase text-[2rem] tablet:text-[3.1rem] font-black text-center tracking-wide font-mono mb-6">Welcome Back</p>
         </div>
 
         <form @submit.prevent="submit">
@@ -90,19 +90,19 @@
                 </Link>
 
             </div>
-                <button class="bg-[#000000] text-white w-full rounded-xl py-3 my-4 font-bold" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <button class="bg-[#000000] text-white text-sm tablet:text- w-full rounded-xl py-3 my-4 font-bold" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                 Log in
                 </button>
         </form>
          <div class="w-full flex text-center">
-            <Link :href="route('register')" class="bg-[#000000] text-white w-full rounded-xl py-3 flex-1 mb-3 font-bold">
+            <Link :href="route('register')" class="bg-[#000000] text-white text-sm tablet:text-md w-full rounded-xl py-3 flex-1 mb-3 font-bold">
                     Or Register
                 </Link>
          </div>
          <div class="border-l-8 border-[#FFFD02] bg-gray-200 p-4 ">
                 <h4 class="font-extrabold">Credentials For Testing</h4>
-                <p>Email: john@example.com</p>
-                <p>Password: Password123!</p>
+                <p>john.smith@inboxbear.com</p>
+                <p>Password123!</p>
             </div>
     </GuestLayout>
 </template>
