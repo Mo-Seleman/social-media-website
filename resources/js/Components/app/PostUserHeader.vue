@@ -15,7 +15,7 @@ defineProps({
 <template>
     <div class="flex items-center gap-1 mobile:gap-2">
         <Link :href="route('profile', post.user.username)">
-        <img :src="post.user.avatar_url" class="w-[52px] rounded-full">
+        <img :src="post.user.avatar_url" class="size-[65px] rounded-full object-cover">
         </Link>
         <div>
             <div class="flex flex-row mobile:gap-2 font-semibold text-lg">

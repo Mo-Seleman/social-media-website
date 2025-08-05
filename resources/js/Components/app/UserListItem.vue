@@ -29,7 +29,7 @@ const selected = ref('');
     <div class="transition-transform duration-300 transform">
         <div class="flex items-center gap-3 bg-[#1A1A1A] dark:bg-white p-3 rounded-xl">
             <Link :href="route('profile', user.username)">
-                <img :src="user.avatar_url" class="w-[38px] rounded-full" />
+                <img :src="user.avatar_url" class="size-[45px] rounded-full object-cover" />
             </Link>
             <div class="flex justify-between items-center flex-1">
                 <Link :href="route('profile', user.username)">
