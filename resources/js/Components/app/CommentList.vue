@@ -124,7 +124,7 @@ function deleteComment(comment) {
 <template>
       <div class="flex gap-2">
         <Link :href="route('profile', authUser.username)">
-            <img :src="authUser.avatar_url" class="w-[52px] rounded-sm">
+            <img :src="authUser.avatar_url" class="size-[52px] rounded-full object-scale-contain">
         </Link>
         <div class="flex flex-1 items-center justify-center px-3 bg-[#1A1A1A] placeholder:text-[#8E8E8E] rounded-xl">
             <TextareaInput v-model="newCommentText" rows="1" maxlength="400" class="bg-inherit outline-none border-none w-full overflow-auto resize-none max-h-[85px]" placeholder="Enter your comment here"/>

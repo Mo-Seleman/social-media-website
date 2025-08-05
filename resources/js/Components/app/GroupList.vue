@@ -33,7 +33,7 @@ const filteredGroups = computed(() => {
             <TextInput v-model="searchKeyword" placeholder="Search For Groups" class="outline-none border-none mt-2 w-full bg-[#1A1A1A] placeholder:text-[#8E8E8E]"/>
             <div class="py-3 max-h-content">
                 <div v-if="!groups.length">
-                    <p class="flex text-center justify-center bg-[#016b83] dark:bg-[#EAF8FA] p-3 rounded-md font-bold">You're Not A Member Of Any Groups</p>
+                    <p class="flex text-center justify-center bg-[#FFFD02] text-[#282828] dark:bg-[#EAF8FA] p-3 rounded-md font-bold">You're Not A Member Of Any Groups</p>
                 </div>
                 <div v-else>
                     <GroupItem v-for="group of filteredGroups" :group="group" />
